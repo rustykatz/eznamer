@@ -60,7 +60,8 @@ def printCommands():
     print("ls  " + "\t\t\t\t" + "-> Lists files in current PATH")
     print("cd  " + "\t\t\t\t" + "-> Change PATH")
     print("sbe " + "\t\t\t\t" + "-> Select Files by extention")
-    print("rm  " + "\t\t\t\t" + "-> Removes string from all files in PATH")
+    print("rf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
+    print("raf " + "\t\t\t\t" + "-> Renames all files in PATH")
     print("help" + "\t\t\t\t" + "-> List commands")
     print("exit" + "\t\t\t\t" + "-> Close Program")
 
@@ -94,14 +95,20 @@ def changeDirectory(path):
     except:
         print("Invalid Directory")
 
-def selectByExtention(extension,string):
-    mod=[] 
-    for file in os.listdir():
-        if (file.endswith(extention)):
-            mod.append(file)
 
-def removeString(extention,string):
-    
+def selectByExtention(extension):
+    mod = []
+    for file in os.listdir():
+        if (file.endswith(extension)):
+            mod.append(file)
+    return mod
+
+
+def renameFile(oldName, newName):
+    print("Renaming '%s' to '%s'..." % (oldName, newName))
+    os.rename(oldName, newName)
+
+
 def main():
     # To Do:
     # Necessary
@@ -123,8 +130,18 @@ def main():
             listCurrDirectory()
 
         elif(ucmd == "cd"):
-            ucmd_2 = input("File Path: ")
-            changeDirectory(ucmd_2)
+            path = input("File Path: ")
+            changeDirectory(path)
+
+        elif(ucmd == "sbe"):
+            extension = input("File Extention: ")
+            sbe = selectByExtention(extension)
+            print(sbe)
+
+        elif(ucmd == "rf"):
+            oldName = input("Old File Name: ")
+            newName = input("New File Name: ")
+            renameFile(oldName, newName)
 
         elif(ucmd == "help"):
             printCommands()
