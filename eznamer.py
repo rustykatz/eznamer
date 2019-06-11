@@ -60,8 +60,8 @@ def printCommands():
     print("ls  " + "\t\t\t\t" + "-> Lists files in current PATH")
     print("cd  " + "\t\t\t\t" + "-> Change PATH")
     print("sbe " + "\t\t\t\t" + "-> Select Files by extention")
-    print("rf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
-    print("raf " + "\t\t\t\t" + "-> Renames all files in PATH")
+    print("rsf " + "\t\t\t\t" + "-> Renames a single files in PATH")
+    print("rf  " + "\t\t\t\t" + "-> Renames all files in PATH")
     print("help" + "\t\t\t\t" + "-> List commands")
     print("exit" + "\t\t\t\t" + "-> Close Program")
 
@@ -104,10 +104,16 @@ def selectByExtention(extension):
     return mod
 
 
-def renameFile(oldName, newName):
+def renameSingleFile(oldName, newName):
     print("Renaming '%s' to '%s'..." % (oldName, newName))
-    os.rename(oldName, newName)
+    try:
+        os.rename(oldName, newName)
+    except:
+        print("ERROR: Cannot create a file when that file already exists.")
 
+
+def renameFiles(mod, oldNames, newNames):
+    
 
 def main():
     # To Do:
@@ -138,11 +144,14 @@ def main():
             sbe = selectByExtention(extension)
             print(sbe)
 
-        elif(ucmd == "rf"):
+        elif(ucmd == "rsf"):
             oldName = input("Old File Name: ")
             newName = input("New File Name: ")
-            renameFile(oldName, newName)
+            renameSingleFile(oldName, newName)
 
+        elif(ucmd == "rf"):
+            # Need to select by extension to get list of modifiable files
+        
         elif(ucmd == "help"):
             printCommands()
 
