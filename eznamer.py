@@ -1,9 +1,10 @@
 # EZNAMER
 # BY: RUSSELL WONG
-# Purpose: Simple script that does the following
+# Purpose: Simple renaming program that does the following
 # 1) Takes a given File path to specified folder
 # 2) Checks for files with a specified string
-# 3) Edits each file name appropriately
+# 3) Adds files that user wants to modify into 'mod' list
+# 3) Applys changes
 
 # SHUTIL MODULE COMMANDS:
 
@@ -48,22 +49,19 @@ import sys
 # CURRENT TARGET OS PATH
 # D:\Movies\'FolderName'
 
-# for filename in os.listdir():
-#     if filename.endswith('.txt'):
-#         #
-#         print(filename)
-
 
 def printCommands():
     print("COMMANDS:")
-    print("list" + "\t\t\t\t" + "-> Lists all files in current PATH")
-    print("ls  " + "\t\t\t\t" + "-> Lists files in current PATH")
-    print("cd  " + "\t\t\t\t" + "-> Change PATH")
-    print("sbe " + "\t\t\t\t" + "-> Select Files by extention")
-    print("rsf " + "\t\t\t\t" + "-> Renames a single files in PATH")
-    print("rf  " + "\t\t\t\t" + "-> Renames all files in PATH")
-    print("help" + "\t\t\t\t" + "-> List commands")
-    print("exit" + "\t\t\t\t" + "-> Close Program")
+    print("lst  " + "\t\t\t\t" + "-> Lists all files in directory tree")
+    print("ls   " + "\t\t\t\t" + "-> Lists files in current PATH")
+    print("cd   " + "\t\t\t\t" + "-> Change PATH")
+    print("sbe  " + "\t\t\t\t" + "-> Select Files by extention")
+    print("rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
+    print("rf   " + "\t\t\t\t" + "-> Renames all files in PATH")
+    print("stage" + "\t\t\t\t" + "-> Shows mod list")
+    print("clear" + "\t\t\t\t" + "-> Clears array containing modifiable items")
+    print("help " + "\t\t\t\t" + "-> List commands")
+    print("exit " + "\t\t\t\t" + "-> Close Program")
 
 
 # List files in current Directory
@@ -96,12 +94,20 @@ def changeDirectory(path):
         print("Invalid Directory")
 
 
-def selectByExtention(extension):
-    mod = []
+def selectByExtention(arr, extension):
     for file in os.listdir():
         if (file.endswith(extension)):
-            mod.append(file)
-    return mod
+            arr.append(file)
+    return arr
+
+
+def selectBySubStr(arr, substr):
+    for file in os.listdir():
+        if (substr in file):
+            print("Adding file: " + file)
+            arr.append(file)
+
+    return arr
 
 
 def renameSingleFile(oldName, newName):
@@ -112,24 +118,43 @@ def renameSingleFile(oldName, newName):
         print("ERROR: Cannot create a file when that file already exists.")
 
 
-def renameFiles(mod, oldNames, newNames):
-    
+def renameFiles(mod, newNames):
+    idx = 1
+    for files in os.listdir():
+        if(files in mod):
+            try:
+                name = newNames + ' ' + str(idx)
+                print("Renaming '%s' to '%s'..." % (files, name))
+                os.rename(files, name)
+                idx += 1
+            except:
+                print("ERROR: Cannot create a file when that file already exists.")
+
+
+def printStage(mod):
+    print("Showing Stage...")
+    idx = 1
+    for i in mod:
+        print(str(idx) + ' ' + i)
+
+
+def clearModList(arr):
+    temp = []
+    arr = temp
+    return arr
+
 
 def main():
-    # To Do:
-    # Necessary
-    # 1) Folder name
-    # 2) File names
-    # 3) List folders and files
-    # 4) Remove specified string
-    # 5) Command Loop
-
+    # List used for staging changes
+    mod = []
+    ext = ""
     printCommands()
     while True:
         print("Current Directory: " + os.getcwd())
 
         ucmd = input("Enter a command: ")
-        if(ucmd == "list"):
+
+        if(ucmd == "listTree"):
             listAllFiles()
 
         elif(ucmd == "ls"):
@@ -141,8 +166,12 @@ def main():
 
         elif(ucmd == "sbe"):
             extension = input("File Extention: ")
-            sbe = selectByExtention(extension)
+            sbe = selectByExtention(mod, extension)
             print(sbe)
+
+        elif(ucmd == "sbs"):
+            substring = input("File Subtring: ")
+            selectBySubStr(mod, substring)
 
         elif(ucmd == "rsf"):
             oldName = input("Old File Name: ")
@@ -150,8 +179,16 @@ def main():
             renameSingleFile(oldName, newName)
 
         elif(ucmd == "rf"):
-            # Need to select by extension to get list of modifiable files
-        
+            newName = input("New File Names: ")
+            renameFiles(mod, newName)
+
+        elif(ucmd == "stage"):
+
+            printStage(mod)
+
+        elif(ucmd == "clear"):
+            mod = clearModList(mod)
+
         elif(ucmd == "help"):
             printCommands()
 
