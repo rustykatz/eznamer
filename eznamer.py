@@ -55,11 +55,12 @@ def printCommands():
     print("lst  " + "\t\t\t\t" + "-> Lists all files in directory tree")
     print("ls   " + "\t\t\t\t" + "-> Lists files in current PATH")
     print("cd   " + "\t\t\t\t" + "-> Change PATH")
-    print("adde  " + "\t\t\t\t" + "-> Select Files by extention")
+    print("adde " + "\t\t\t\t" + "-> Select Files by extention")
     print("add  " + "\t\t\t\t" + "-> Select Files by sub string")
     print("rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
     print("rf   " + "\t\t\t\t" + "-> Renames all files in PATH")
     print("stage" + "\t\t\t\t" + "-> Shows mod list")
+    print("sext " + "\t\t\t\t" + "-> Set File Extension to use for session")
     print("clear" + "\t\t\t\t" + "-> Clears array containing modifiable items")
     print("help " + "\t\t\t\t" + "-> List commands")
     print("exit " + "\t\t\t\t" + "-> Close Program")
@@ -130,7 +131,10 @@ def renameFiles(mod, newNames, ext):
     for files in os.listdir():
         if(files in mod):
             try:
-                name = newNames + ' ' + str(idx) + ext
+                if(idx <= 9):
+                    name = newNames + ' - 0' + str(idx) + ext
+                else:
+                    name = newNames + ' - ' + str(idx) + ext
                 print("Renaming '%s' to '%s'..." % (files, name))
                 os.rename(files, name)
                 idx += 1
@@ -156,6 +160,8 @@ def main():
     # List used for staging changes
     mod = []
     ext = ""
+    # Sets session default file extension
+    sesext = ""
     printCommands()
     while True:
         print("Current Directory: " + os.getcwd())
@@ -181,20 +187,32 @@ def main():
             selectBySubStr(mod, substring)
 
         elif(ucmd == "rsf"):
-            ext = input("File Extension: ")
-            newName = input("New File Name: ")
-            renameSingleFile(mod, newName, ext)
+            if(sesext == ""):
+                ext = input("File Extension: ")
+                newName = input("New File Name: ")
+                renameSingleFile(mod, newName, ext)
+            else:
+                newName = input("New File Name: ")
+                renameSingleFile(mod, newName, sesext)
             mod = clearModList(mod)
 
         elif(ucmd == "rf"):
-            ext = input("File Extension: ")
-            newName = input("New File Names: ")
-            renameFiles(mod, newName, ext)
+            if(sesext == ""):
+                ext = input("File Extension: ")
+                newName = input("New File Names: ")
+                renameFiles(mod, newName, ext)
+            else:
+                newName = input("New File Names: ")
+                renameFiles(mod, newName, sesext)
             mod = clearModList(mod)
 
         elif(ucmd == "stage"):
-
             printStage(mod)
+
+        elif(ucmd == "sext"):
+            ext = input("Session File Extension: ")
+            sesext = ext
+            print("SESSION FILE EXTENSION SET TO: " + sesext)
 
         elif(ucmd == "clear"):
             mod = clearModList(mod)
