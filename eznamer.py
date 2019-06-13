@@ -55,7 +55,8 @@ def printCommands():
     print("lst  " + "\t\t\t\t" + "-> Lists all files in directory tree")
     print("ls   " + "\t\t\t\t" + "-> Lists files in current PATH")
     print("cd   " + "\t\t\t\t" + "-> Change PATH")
-    print("sbe  " + "\t\t\t\t" + "-> Select Files by extention")
+    print("adde  " + "\t\t\t\t" + "-> Select Files by extention")
+    print("add  " + "\t\t\t\t" + "-> Select Files by sub string")
     print("rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
     print("rf   " + "\t\t\t\t" + "-> Renames all files in PATH")
     print("stage" + "\t\t\t\t" + "-> Shows mod list")
@@ -97,10 +98,12 @@ def changeDirectory(path):
 def selectByExtention(arr, extension):
     for file in os.listdir():
         if (file.endswith(extension)):
+            print("Adding file: " + file)
             arr.append(file)
     return arr
 
 
+# NOTE: substr is case sensitive
 def selectBySubStr(arr, substr):
     for file in os.listdir():
         if (substr in file):
@@ -110,20 +113,24 @@ def selectBySubStr(arr, substr):
     return arr
 
 
-def renameSingleFile(oldName, newName):
-    print("Renaming '%s' to '%s'..." % (oldName, newName))
-    try:
-        os.rename(oldName, newName)
-    except:
-        print("ERROR: Cannot create a file when that file already exists.")
+def renameSingleFile(mod, newName, ext):
+    if(len(mod) == 1):
+        try:
+            name = newName + ext
+            print("Renaming '%s' to '%s'..." % (mod[0], name))
+            os.rename(mod[0], name)
+        except:
+            print("ERROR: Cannot create a file when that file already exists.")
+    else:
+        print("ERROR: Multiple Files. Please use 'rf' command.")
 
 
-def renameFiles(mod, newNames):
+def renameFiles(mod, newNames, ext):
     idx = 1
     for files in os.listdir():
         if(files in mod):
             try:
-                name = newNames + ' ' + str(idx)
+                name = newNames + ' ' + str(idx) + ext
                 print("Renaming '%s' to '%s'..." % (files, name))
                 os.rename(files, name)
                 idx += 1
@@ -139,6 +146,7 @@ def printStage(mod):
 
 
 def clearModList(arr):
+    print("Clearing Mod List...")
     temp = []
     arr = temp
     return arr
@@ -164,23 +172,25 @@ def main():
             path = input("File Path: ")
             changeDirectory(path)
 
-        elif(ucmd == "sbe"):
-            extension = input("File Extention: ")
-            sbe = selectByExtention(mod, extension)
-            print(sbe)
+        elif(ucmd == "adde"):
+            ext = input("File Extension: ")
+            sbe = selectByExtention(mod, ext)
 
-        elif(ucmd == "sbs"):
+        elif(ucmd == "add"):
             substring = input("File Subtring: ")
             selectBySubStr(mod, substring)
 
         elif(ucmd == "rsf"):
-            oldName = input("Old File Name: ")
+            ext = input("File Extension: ")
             newName = input("New File Name: ")
-            renameSingleFile(oldName, newName)
+            renameSingleFile(mod, newName, ext)
+            mod = clearModList(mod)
 
         elif(ucmd == "rf"):
+            ext = input("File Extension: ")
             newName = input("New File Names: ")
-            renameFiles(mod, newName)
+            renameFiles(mod, newName, ext)
+            mod = clearModList(mod)
 
         elif(ucmd == "stage"):
 
