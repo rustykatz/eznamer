@@ -50,9 +50,26 @@ import sys
 # D:\Movies\'FolderName'
 
 
+def initAscii():
+    print("########################################################")
+    print("##  ______ _______   _          __  __ ______ _____   ##")
+    print("## |  ____|___  / \ | |   /\   |  \/  |  ____|  __ \  ##")
+    print("## | |__     / /|  \| |  /  \  | \  / | |__  | |__) | ##")
+    print("## |  __|   / / | . ` | / /\ \ | |\/| |  __| |  _  /  ##")
+    print("## | |____ / /__| |\  |/ ____ \| |  | | |____| | \ \  ##")
+    print("## |______/_____|_| \_/_/    \_\_|  |_|______|_|  \_\ ##")
+    print("##                                                    ##")
+    print("################### By: Russell Wong ###################")
+    print("########################################################")
+    print("\n")
+    print("TO SEE COMMANDS TYPE: 'help'")
+    print("TO LEARN HOW TO USE COMMANDS TYPE: 'use'")
+    print("\n")
+
+
 def printCommands():
     print("COMMANDS:")
-    print("lst  " + "\t\t\t\t" + "-> Lists all files in directory tree")
+    print("lst  " + "\t\t\t\t" + "-> Lists files and sub directories from current PATH")
     print("ls   " + "\t\t\t\t" + "-> Lists files in current PATH")
     print("cd   " + "\t\t\t\t" + "-> Change PATH")
     print("adde " + "\t\t\t\t" + "-> Select Files by extention")
@@ -63,29 +80,61 @@ def printCommands():
     print("sext " + "\t\t\t\t" + "-> Set File Extension to use for session")
     print("clear" + "\t\t\t\t" + "-> Clears array containing modifiable items")
     print("help " + "\t\t\t\t" + "-> List commands")
+    print("use  " + "\t\t\t\t" + "-> Best practice on using the program")
     print("exit " + "\t\t\t\t" + "-> Close Program")
 
 
-# List files in current Directory
+def howToUse():
+    print("HOW TO USE EZNAMER")
+    print("########################################################")
+    print("NAVIGATION:")
+    print("-> Use commands 'ls' to list all directories at your current "
+           "location. 'lst' will list all directories and sub-directories "
+           "from your current PATH.")
+    print("-> Changing directories can be done by using 'cd' followed by the "
+            "desired PATH. I.e. 'cd D:\Movies\Folder' ")
+    print("\n")
+    print("WHAT IS YOUR STAGE:")
+    print("-> Stage is where all the files that will be modified are stored. "
+            "You can add items by using commands 'add' or 'adde' "
+            "and remove by 'rm' or 'rme' or 'clear'.")
+    print("\n")
+    print("TIPS:")
+    print("########################################################")
+    print("MODIFYING SAME FILE TYPES IN SESSION")
+    print("-> Use 'sext' to set file extention for session. "
+            "Will save you from having to manually "
+            "set it each time you modify a file.")
+    print("\n")
+
+
+# List files in current Directory tree
 def listAllFiles():
-    print("Listing all files in current directory...")
-    cwd = os.getcwd()
-    for folder, subfolders, filenames in os.walk(cwd):
-        print('The current folder is ' + folder)
+    print("Listing all files in current directory tree...")
+    try:
+        cwd = os.getcwd()
+        for folder, subfolders, filenames in os.walk(cwd):
+            print('The current folder is ' + folder)
 
-        for subfolder in subfolders:
-            print('SUBFOLDER OF ' + folder + ': ' + subfolder)
+            for subfolder in subfolders:
+                print('SUBFOLDER OF ' + folder + ': ' + subfolder)
 
-        for filename in filenames:
-            print('FILE INSIDE ' + folder + ': ' + filename)
+            for filename in filenames:
+                print('FILE INSIDE ' + folder + ': ' + filename)
 
-        print('')
+            print('')
+    except:
+        print("ERROR: Can't list files in directory tree.")
 
 
+# List files in current Directory
 def listCurrDirectory():
-    print("Listing files in current directory...")
-    a = os.listdir()
-    print(a)
+    try:
+        print("Listing files in current directory...")
+        cd = os.listdir()
+        print(cd)
+    except:
+        print("ERROR: Can't list files in current directory.")
 
 
 # Change working directory to path
@@ -93,14 +142,18 @@ def changeDirectory(path):
     try:
         os.chdir(path)
     except:
-        print("Invalid Directory")
+        print("ERROR: Invalid directory.")
 
 
 def selectByExtention(arr, extension):
     for file in os.listdir():
         if (file.endswith(extension)):
-            print("Adding file: " + file)
-            arr.append(file)
+            try:
+                print("Adding file to stage: " + file)
+                arr.append(file)
+            except:
+                print("ERROR: Can't add file to stage.")
+    print("%s Files have been added to stage." % (len(file)))
     return arr
 
 
@@ -108,9 +161,12 @@ def selectByExtention(arr, extension):
 def selectBySubStr(arr, substr):
     for file in os.listdir():
         if (substr in file):
-            print("Adding file: " + file)
-            arr.append(file)
-
+            try:
+                print("Adding file to stage: " + file)
+                arr.append(file)
+            except:
+                print("ERROR: Can't add file to stage.")
+    print("%s Files have been added to stage." % (len(file)))
     return arr
 
 
@@ -121,7 +177,7 @@ def renameSingleFile(mod, newName, ext):
             print("Renaming '%s' to '%s'..." % (mod[0], name))
             os.rename(mod[0], name)
         except:
-            print("ERROR: Cannot create a file when that file already exists.")
+            print("ERROR: File name at destination already exists.")
     else:
         print("ERROR: Multiple Files. Please use 'rf' command.")
 
@@ -139,30 +195,39 @@ def renameFiles(mod, newNames, ext):
                 os.rename(files, name)
                 idx += 1
             except:
-                print("ERROR: Cannot create a file when that file already exists.")
+                print("ERROR: File name at destination already exists.")
+    print("%s/%s Files have been successfully renamed." % (idx, len(files)))
 
 
 def printStage(mod):
-    print("Showing Stage...")
-    idx = 1
-    for i in mod:
-        print(str(idx) + ' ' + i)
+    try:
+        print("Showing Stage...")
+        idx = 1
+        for i in mod:
+            print(str(idx) + ' ' + i)
+    except:
+        print("ERROR: Can't show stage.")
 
 
 def clearModList(arr):
-    print("Clearing Mod List...")
-    temp = []
-    arr = temp
+    try:
+        print("Clearing stage List...")
+        temp = []
+        arr = temp
+    except:
+        print("ERROR: Can't clear stage.")
+
     return arr
 
 
 def main():
+    initAscii()
     # List used for staging changes
     mod = []
     ext = ""
     # Sets session default file extension
     sesext = ""
-    printCommands()
+    # printCommands()
     while True:
         print("Current Directory: " + os.getcwd())
 
@@ -219,6 +284,9 @@ def main():
 
         elif(ucmd == "help"):
             printCommands()
+
+        elif(ucmd == "use"):
+            howToUse()
 
         elif(ucmd == "exit"):
             print("Terminating program.")
