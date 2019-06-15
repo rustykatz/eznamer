@@ -143,6 +143,7 @@ def listCurrDirectory():
         print(cd)
     except:
         print("ERROR: Can't list files in current directory.")
+    print("\n")
 
 
 # Change working directory to path
@@ -151,30 +152,37 @@ def changeDirectory(path):
         os.chdir(path)
     except:
         print("ERROR: Invalid directory.")
+    print("\n")
 
 
 def selectByExtention(arr, extension):
+    num = 0
     for file in os.listdir():
         if (file.endswith(extension)):
             try:
                 print("Adding file to stage: " + file)
                 arr.append(file)
+                num += 1
             except:
                 print("ERROR: Can't add file to stage.")
-    print("%s Files have been added to stage." % (len(file)))
+    print("%s Files have been added to stage." % (num))
+    print("\n")
     return arr
 
 
 # NOTE: substr is case sensitive
 def selectBySubStr(arr, substr):
+    num = 0
     for file in os.listdir():
         if (substr in file):
             try:
                 print("Adding file to stage: " + file)
                 arr.append(file)
+                num += 1
             except:
                 print("ERROR: Can't add file to stage.")
-    print("%s Files have been added to stage." % (len(file)))
+    print("%s Files have been added to stage." % (num))
+    print("\n")
     return arr
 
 
@@ -188,10 +196,12 @@ def renameSingleFile(mod, newName, ext):
             print("ERROR: File name at destination already exists.")
     else:
         print("ERROR: Multiple Files. Please use 'rf' command.")
+    print("\n")
 
 
 def renameFiles(mod, newNames, ext):
     idx = 1
+    total = 0
     for files in os.listdir():
         if(files in mod):
             try:
@@ -202,9 +212,47 @@ def renameFiles(mod, newNames, ext):
                 print("Renaming '%s' to '%s'..." % (files, name))
                 os.rename(files, name)
                 idx += 1
+                total += 1
             except:
                 print("ERROR: File name at destination already exists.")
-    print("%s/%s Files have been successfully renamed." % (idx, len(files)))
+    print("%s/%s Files have been successfully renamed." % (idx, total))
+    print("\n")
+
+
+def removeFromStage(mod, name):
+    for file in mod:
+        try:
+            if (file == name):
+                mod.remove(file)
+        except:
+            print("ERROR: Can't remove file from stage.")
+    print("\n")
+    return mod
+
+
+def removeExFromStage(mod, ename):
+    for files in mod:
+        try:
+            if(ename in files):
+                mod.remove(files)
+        except:
+            print("ERROR: No files with that extension.")
+    print("\n")
+    return mod
+
+
+def deleteFiles(mod):
+    num = 0
+    print("Preparing recylcing bin...")
+    for files in mod:
+        try:
+            print("Deleting '%s' from stage... " % (files))
+            send2trash.send2trash(files)
+            num += 1
+        except:
+            print("ERROR: Can't delete files")
+    print("%s Files successfully deleted." % (num))
+    print("\n")
 
 
 def printStage(mod):
@@ -215,6 +263,7 @@ def printStage(mod):
             print(str(idx) + ' ' + i)
     except:
         print("ERROR: Can't show stage.")
+    print("\n")
 
 
 def clearModList(arr):
@@ -224,7 +273,7 @@ def clearModList(arr):
         arr = temp
     except:
         print("ERROR: Can't clear stage.")
-
+    print("\n")
     return arr
 
 
@@ -279,6 +328,14 @@ def main():
                 renameFiles(mod, newName, sesext)
             mod = clearModList(mod)
 
+        elif(ucmd == "rm"):
+            rname = input("File to remove from stage: ")
+            mod = removeFromStage(mod, rname)
+
+        elif(ucmd == "rme"):
+            ename = input("Extention to remove from stage: ")
+            mod = removeExFromStage(mod, ename)
+
         elif(ucmd == "stage"):
             printStage(mod)
 
@@ -286,6 +343,11 @@ def main():
             ext = input("Session File Extension: ")
             sesext = ext
             print("SESSION FILE EXTENSION SET TO: " + sesext)
+
+        elif(ucmd == "del"):
+            delCheck = input("Are you sure you want to delete files? Y/N: ").upper()
+            if(delCheck == "Y"):
+                deleteFiles(mod)
 
         elif(ucmd == "clear"):
             mod = clearModList(mod)
