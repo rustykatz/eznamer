@@ -51,61 +51,69 @@ import sys
 
 
 def initAscii():
-    print("########################################################")
-    print("##  ______ _______   _          __  __ ______ _____   ##")
-    print("## |  ____|___  / \ | |   /\   |  \/  |  ____|  __ \  ##")
-    print("## | |__     / /|  \| |  /  \  | \  / | |__  | |__) | ##")
-    print("## |  __|   / / | . ` | / /\ \ | |\/| |  __| |  _  /  ##")
-    print("## | |____ / /__| |\  |/ ____ \| |  | | |____| | \ \  ##")
-    print("## |______/_____|_| \_/_/    \_\_|  |_|______|_|  \_\ ##")
-    print("##                                                    ##")
-    print("################### By: Russell Wong ###################")
-    print("########################################################")
-    print("\n")
-    print("TO SEE COMMANDS TYPE: 'help'")
-    print("TO LEARN HOW TO USE COMMANDS TYPE: 'use'")
-    print("\n")
+    print("""
+    8########################################################8
+    8##  ______ _______   _          __  __ ______ _____   ##8
+    8## |  ____|___  / \ | |   /\   |  \/  |  ____|  __ \  ##8
+    8## | |__     / /|  \| |  /  \  | \  / | |__  | |__) | ##8
+    8## |  __|   / / | . ` | / /\ \ | |\/| |  __| |  _  /  ##8
+    8## | |____ / /__| |\  |/ ____ \| |  | | |____| | \ \  ##8
+    8## |______/_____|_| \_/_/    \_\_|  |_|______|_|  \_\ ##8
+    8##                                                    ##8
+    8################### By: Russell Wong ###################8
+    8########################################################8
+    \n
+    TO SEE COMMANDS TYPE: 'help'
+    TO LEARN HOW TO USE COMMANDS TYPE: 'use'
+    \n""")
 
 
 def printCommands():
-    print("COMMANDS:")
-    print("lst  " + "\t\t\t\t" + "-> Lists files and sub directories from current PATH")
-    print("ls   " + "\t\t\t\t" + "-> Lists files in current PATH")
-    print("cd   " + "\t\t\t\t" + "-> Change PATH")
-    print("adde " + "\t\t\t\t" + "-> Select Files by extention")
-    print("add  " + "\t\t\t\t" + "-> Select Files by sub string")
-    print("rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH")
-    print("rf   " + "\t\t\t\t" + "-> Renames all files in PATH")
-    print("stage" + "\t\t\t\t" + "-> Shows mod list")
-    print("sext " + "\t\t\t\t" + "-> Set File Extension to use for session")
-    print("clear" + "\t\t\t\t" + "-> Clears array containing modifiable items")
-    print("help " + "\t\t\t\t" + "-> List commands")
-    print("use  " + "\t\t\t\t" + "-> Best practice on using the program")
-    print("exit " + "\t\t\t\t" + "-> Close Program")
+    print("""
+    COMMANDS:
+    lst  " + "\t\t\t\t" + "-> Lists files and sub directories from current PATH
+    ls   " + "\t\t\t\t" + "-> Lists files in current PATH
+    cd   " + "\t\t\t\t" + "-> Change PATH
+    adde " + "\t\t\t\t" + "-> Select Files by extention
+    add  " + "\t\t\t\t" + "-> Select Files by sub string
+    rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH
+    rf   " + "\t\t\t\t" + "-> Renames all files in PATH
+    rm   " + "\t\t\t\t" + "-> Removes a file from stage. (Case Sensitive)
+    rme  " + "\t\t\t\t" + "-> Removes all files from stage that have the given file extension.
+    stage" + "\t\t\t\t" + "-> Shows list of items to be modified
+    sext " + "\t\t\t\t" + "-> Set File Extension to use for session
+    clear" + "\t\t\t\t" + "-> Clears array containing modifiable items
+    help " + "\t\t\t\t" + "-> List commands
+    use  " + "\t\t\t\t" + "-> Best practice on using the program
+    exit " + "\t\t\t\t" + "-> Close Program
+    \n
+    """)
 
 
 def howToUse():
-    print("HOW TO USE EZNAMER")
-    print("########################################################")
-    print("NAVIGATION:")
-    print("-> Use commands 'ls' to list all directories at your current "
-           "location. 'lst' will list all directories and sub-directories "
-           "from your current PATH.")
-    print("-> Changing directories can be done by using 'cd' followed by the "
-            "desired PATH. I.e. 'cd D:\Movies\Folder' ")
-    print("\n")
-    print("WHAT IS YOUR STAGE:")
-    print("-> Stage is where all the files that will be modified are stored. "
-            "You can add items by using commands 'add' or 'adde' "
-            "and remove by 'rm' or 'rme' or 'clear'.")
-    print("\n")
-    print("TIPS:")
-    print("########################################################")
-    print("MODIFYING SAME FILE TYPES IN SESSION")
-    print("-> Use 'sext' to set file extention for session. "
-            "Will save you from having to manually "
-            "set it each time you modify a file.")
-    print("\n")
+    print("""
+    HOW TO USE EZNAMER")
+    ########################################################")
+    NAVIGATION:
+    -> Use commands 'ls' to list all directories at your current
+         location. 'lst' will list all directories and sub-directories
+         from your current PATH.
+    -> Changing directories can be done by using 'cd' followed by the
+         desired PATH. I.e. 'cd D:\Movies\Folder'
+    \n
+    WHAT IS YOUR STAGE:
+    -> Stage is where all the files that will be modified are stored.
+         You can add items by using commands 'add' or 'adde'
+         and remove by 'rm' or 'rme' or 'clear'.
+    \n
+    TIPS:
+    ########################################################
+    MODIFYING SAME FILE TYPES IN SESSION
+    -> Use 'sext' to set file extention for session.
+         Will save you from having to manually
+         set it each time you modify a file.
+    \n
+    """)
 
 
 # List files in current Directory tree
