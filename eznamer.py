@@ -1,10 +1,14 @@
-# EZNAMER
-# BY: RUSSELL WONG
-# Purpose: Simple renaming program that does the following
-# 1) Takes a given File path to specified folder
-# 2) Checks for files with a specified string
-# 3) Adds files that user wants to modify into 'mod' list
-# 3) Applys changes
+# ~~~~~ EZNAMER ~~~~~
+# Copyright 2019 Russell Wong, All Rights Reserved
+# Unauthorized copying of this file, via any medium is strictly prohibited
+# Written By: RUSSELL WONG
+
+
+# Purpose: Simple Mass file renaming program. Navigation works similar to 
+# a unix terminal, i.e. using 'ls' and 'cd' commands. With this program you
+# can naviagate to a folder and select the files you want to modify. 
+# Selected files that are modifiable are added to a list called 'Stage'.
+# Any changes you make will only be done to files in the list 'Stage'.
 
 # SHUTIL MODULE COMMANDS:
 
@@ -52,16 +56,16 @@ import sys
 
 def initAscii():
     print("""
-    8########################################################8
-    8##  ______ _______   _          __  __ ______ _____   ##8
-    8## |  ____|___  / \ | |   /\   |  \/  |  ____|  __ \  ##8
-    8## | |__     / /|  \| |  /  \  | \  / | |__  | |__) | ##8
-    8## |  __|   / / | . ` | / /\ \ | |\/| |  __| |  _  /  ##8
-    8## | |____ / /__| |\  |/ ____ \| |  | | |____| | \ \  ##8
-    8## |______/_____|_| \_/_/    \_\_|  |_|______|_|  \_\ ##8
-    8##                                                    ##8
-    8################### By: Russell Wong ###################8
-    8########################################################8
+    88########################################################88
+    88##  ______ _______   _          __  __ ______ _____   ##88
+    88## |  ____|___  / \ | |   /\   |  \/  |  ____|  __ \  ##88
+    88## | |__     / /|  \| |  /  \  | \  / | |__  | |__) | ##88
+    88## |  __|   / / | . ` | / /\ \ | |\/| |  __| |  _  /  ##88
+    88## | |____ / /__| |\  |/ ____ \| |  | | |____| | \ \  ##88
+    88## |______/_____|_| \_/_/    \_\_|  |_|______|_|  \_\ ##88
+    88##                                                    ##88
+    88################### By: Russell Wong ###################88
+    88########################################################88
     \n
     TO SEE COMMANDS TYPE: 'help'
     TO LEARN HOW TO USE COMMANDS TYPE: 'use'
@@ -71,21 +75,22 @@ def initAscii():
 def printCommands():
     print("""
     COMMANDS:
-    lst  " + "\t\t\t\t" + "-> Lists files and sub directories from current PATH
-    ls   " + "\t\t\t\t" + "-> Lists files in current PATH
-    cd   " + "\t\t\t\t" + "-> Change PATH
-    adde " + "\t\t\t\t" + "-> Select Files by extention
-    add  " + "\t\t\t\t" + "-> Select Files by sub string
-    rsf  " + "\t\t\t\t" + "-> Renames a single files in PATH
-    rf   " + "\t\t\t\t" + "-> Renames all files in PATH
-    rm   " + "\t\t\t\t" + "-> Removes a file from stage. (Case Sensitive)
-    rme  " + "\t\t\t\t" + "-> Removes all files from stage that have the given file extension.
-    stage" + "\t\t\t\t" + "-> Shows list of items to be modified
-    sext " + "\t\t\t\t" + "-> Set File Extension to use for session
-    clear" + "\t\t\t\t" + "-> Clears array containing modifiable items
-    help " + "\t\t\t\t" + "-> List commands
-    use  " + "\t\t\t\t" + "-> Best practice on using the program
-    exit " + "\t\t\t\t" + "-> Close Program
+    lst    -> Lists all branch directories from current folder
+    ls     -> Lists files in current folder
+    cd     -> Change file directories
+    adde   -> Add files to Stage by extention
+    add    -> Add files to Stage by char string
+    rsf    -> Renames a single files in PATH
+    rf     -> Renames all files in Stage
+    rm     -> Removes a file from Stage by string (Case Sensitive)
+    rme    -> Removes all files from Stage by file extension.
+    stage  -> List of modifiable items
+    del    -> Delete items in Stage
+    setx   -> Set File Extension to use for session
+    clear  -> Clears array containing modifiable items
+    help   -> List commands
+    use    -> Best practice on using the program
+    exit   -> Close Program
     \n
     """)
 
@@ -109,7 +114,7 @@ def howToUse():
     TIPS:
     ########################################################
     MODIFYING SAME FILE TYPES IN SESSION
-    -> Use 'sext' to set file extention for session.
+    -> Use 'setx' to set file extention for session.
          Will save you from having to manually
          set it each time you modify a file.
     \n
@@ -215,7 +220,7 @@ def renameFiles(mod, newNames, ext):
                 total += 1
             except:
                 print("ERROR: File name at destination already exists.")
-    print("%s/%s Files have been successfully renamed." % (idx, total))
+    print("%s/%s Files have been successfully renamed." % (idx-1, total))
     print("\n")
 
 
@@ -276,6 +281,23 @@ def clearModList(arr):
     print("\n")
     return arr
 
+    # lst   + \t\t\t\t + -> Lists all branch directories from current folder
+    # ls    + \t\t\t\t + -> Lists files in current folder
+    # cd    + \t\t\t\t + -> Change file directories
+    # adde  + \t\t\t\t + -> Add files to Stage by extention
+    # add   + \t\t\t\t + -> Add files to Stage by char string
+    # rsf   + \t\t\t\t + -> Renames a single files in PATH
+    # rf    + \t\t\t\t + -> Renames all files in Stage
+    # rm    + \t\t\t\t + -> Removes a file from Stage by string (Case Sensitive)
+    # rme   + \t\t\t\t + -> Removes all files from Stage by file extension.
+    # stage + \t\t\t\t + -> List of modifiable items
+    # del   + \t\t\t\t + -> List of modifiable items
+    # setx  + \t\t\t\t + -> Set File Extension to use for session
+    # clear + \t\t\t\t + -> Clears array containing modifiable items
+    # help  + \t\t\t\t + -> List commands
+    # use   + \t\t\t\t + -> Best practice on using the program
+    # exit  + \t\t\t\t + -> Close Program
+
 
 def main():
     initAscii()
@@ -287,79 +309,173 @@ def main():
     # printCommands()
     while True:
         print("Current Directory: " + os.getcwd())
+        # strip() removes trailing and leading spaces
+        ucmd = (input("Enter a command: ")).strip()
+        # input string -> array elem split by spaces
+        ucmd = ucmd.split(' ')
 
-        ucmd = input("Enter a command: ")
-
-        if(ucmd == "listTree"):
+        if(ucmd[0] == "listTree"):
             listAllFiles()
 
-        elif(ucmd == "ls"):
+        elif(ucmd[0] == "ls"):
             listCurrDirectory()
 
-        elif(ucmd == "cd"):
-            path = input("File Path: ")
-            changeDirectory(path)
+        elif(ucmd[0] == "cd"):
+            # CASE: 1 Input
+            if(len(ucmd) == 1):
+                nextDir = (input("File Path: ")).strip()
+                changeDirectory(nextDir)
 
-        elif(ucmd == "adde"):
-            ext = input("File Extension: ")
+            # CASE: 2 or more inputs
+            elif(len(ucmd) >= 2):
+                nextDir = ""
+                for i in range(1, len(ucmd)):
+                    nextDir = nextDir + ' ' + ucmd[i]
+
+                # Remove leading and trailing white spaces
+                nextDir = nextDir.strip()
+                changeDirectory(nextDir)
+
+        elif(ucmd[0] == "adde"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                ext = (input("File Extension: ")).strip()
+                # CASE: user forgets '.' in front of extension
+                if(ext[0] != '.'):
+                    ext = '.' + ext
+
+            # CASE: 2 inputs
+            else:
+                # CASE: user forgets '.' in front of extension
+                if(ucmd[1][0] != '.'):
+                    ext = '.' + ucmd[1]
+
             sbe = selectByExtention(mod, ext)
 
-        elif(ucmd == "add"):
-            substring = input("File Subtring: ")
+        elif(ucmd[0] == "add"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                substring = (input("File Subtring: ")).strip()
+
+            # CASE: 2 inputs
+            else:
+                substring = ucmd[1]
+
             selectBySubStr(mod, substring)
 
-        elif(ucmd == "rsf"):
-            if(sesext == ""):
-                ext = input("File Extension: ")
-                newName = input("New File Name: ")
-                renameSingleFile(mod, newName, ext)
+        elif(ucmd[0] == "rsf"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                # CASE: no global session extension
+                if(sesext == ""):
+                    ext = (input("File Extension: ")).strip()
+                    newName = (input("New File Name: ")).strip()
+                    renameSingleFile(mod, newName, ext)
+                else:
+                    newName = (input("New File Name: ")).stirp()
+                    renameSingleFile(mod, newName, sesext)
+
+            # CASE: 2 inputs
             else:
-                newName = input("New File Name: ")
-                renameSingleFile(mod, newName, sesext)
+                newName = ""
+                for i in range(1, len(ucmd)):
+                    newName = newName + ' ' + ucmd[i]
+                newName = newName.strip()
+                # CASE: no global session extension
+                if(sesext == ""):
+                    ext = (input("File Extension: ")).strip()
+                    renameSingleFile(mod, newName, ext)
+                else:
+                    renameSingleFile(mod, newName, sesext)
+            # Clear mod list before returning
             mod = clearModList(mod)
 
-        elif(ucmd == "rf"):
-            if(sesext == ""):
-                ext = input("File Extension: ")
-                newName = input("New File Names: ")
-                renameFiles(mod, newName, ext)
+        elif(ucmd[0] == "rf"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                if(sesext == ""):
+                    ext = (input("File Extension: ")).strip()
+                    if(ext[0] != '.'):
+                        ext = '.' + ext
+                    newName = (input("New File Names: ")).strip()
+                    renameFiles(mod, newName, ext)
+                else:
+                    newName = (input("New File Names: ")).strip()
+                    renameFiles(mod, newName, sesext)
+
+            # CASE: 2 inputs
             else:
-                newName = input("New File Names: ")
-                renameFiles(mod, newName, sesext)
+                newName = ""
+                for i in range(1, len(ucmd)):
+                    newName = newName + ' ' + ucmd[i]
+                newName = newName.strip()
+                if(sesext == ""):
+                    ext = (input("File Extension: ")).strip()
+                    # CASE: missing '.' for extension
+                    if(ext[0] != '.'):
+                        ext = '.' + ext
+                    renameFiles(mod, newName, ext)
+                else:
+                    renameFiles(mod, newName, sesext)
+
+            # Clear mod list before returning
             mod = clearModList(mod)
 
-        elif(ucmd == "rm"):
-            rname = input("File to remove from stage: ")
+        elif(ucmd[0] == "rm"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                rname = (input("File to remove from stage: ")).strip()
+
+            # CASE: 2 inputs
+            else:
+                rname = ucmd[1]
+
             mod = removeFromStage(mod, rname)
 
-        elif(ucmd == "rme"):
-            ename = input("Extention to remove from stage: ")
+        elif(ucmd[0] == "rme"):
+            # CASE: 1 input
+            if(len(ucmd) == 1):
+                ename = (input("Extention to remove from stage: ")).strip()
+
+            # CASE: 2 inputs
+            else:
+                ename = ucmd[1]
+
             mod = removeExFromStage(mod, ename)
 
-        elif(ucmd == "stage"):
+        elif(ucmd[0] == "stage"):
             printStage(mod)
 
-        elif(ucmd == "sext"):
-            ext = input("Session File Extension: ")
-            sesext = ext
+        elif(ucmd[0] == "setx"):
+            # CASE: 1 inputs
+            if(len(ucmd) == 1):
+                sesext = (input("Session File Extension: ")).strip()
+
+            # CASE: 2 input
+            else:
+                sesext = ucmd[1]
+
+            # CASE: Missing '.' for extension
+            if(sesext[0] != '.'):
+                sesext = '.' + sesext
             print("SESSION FILE EXTENSION SET TO: " + sesext)
 
-        elif(ucmd == "del"):
-            delCheck = input("Are you sure you want to delete files? Y/N: ").upper()
+        elif(ucmd[0] == "del"):
+            delCheck = (input("Are you sure you want to delete files? Y/N: ")).strip().upper()
             if(delCheck == "Y"):
                 deleteFiles(mod)
 
-        elif(ucmd == "clear"):
+        elif(ucmd[0] == "clear"):
             mod = clearModList(mod)
 
-        elif(ucmd == "help"):
+        elif(ucmd[0] == "help"):
             printCommands()
 
-        elif(ucmd == "use"):
+        elif(ucmd[0] == "use"):
             howToUse()
 
-        elif(ucmd == "exit"):
-            print("Terminating program.")
+        elif(ucmd[0] == "exit"):
+            print("Terminating program...")
             sys.exit(0)
 
         else:
