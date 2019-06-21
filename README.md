@@ -25,8 +25,8 @@ As this program is not currently packaged into a standalone application or execu
 
 | #  | MODULE |
 | ------------- | ------------- |
-| 1.  | shutil |
-| 2.  | send2trash |
+| 1.  | send2trash |
+
 
 ## Command List: 
 
