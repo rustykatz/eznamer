@@ -45,7 +45,7 @@
 # py -m pip install [Package Name]
 
 # Fxns to copy, move, rename and delete files
-import shutil
+# import shutil
 # Safer deletion of files
 import send2trash
 # Modifying files
