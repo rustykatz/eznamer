@@ -2,16 +2,17 @@
 # Copyright 2019 Russell Wong, All Rights Reserved
 # Unauthorized copying of this file, via any medium is strictly prohibited
 # Written By: RUSSELL WONG
+# Written In: Python 3.7
 
 
-# Purpose: Simple Mass file renaming program. Navigation works similar to 
-# a unix terminal, i.e. using 'ls' and 'cd' commands. With this program you
-# can naviagate to a folder and select the files you want to modify. 
-# Selected files that are modifiable are added to a list called 'Stage'.
-# Any changes you make will only be done to files in the list 'Stage'.
-
+# ~~~~~ What is Eznamer? ~~~~~
+# Eznamer is a simple and intuitive mass file renaming program.
+# Program navigation is similar to that of a unix terminal
+# where users can navigate folders via commands such as 'ls' and 'cd'.
 # SHUTIL MODULE COMMANDS:
 
+
+# ~~~~~ This is just so I remember what the library functions do ~~~~~
 # shutil.copy(source, destination)
 # -> copy file at the path source to dest, both are strings.
 # -> If dest is a filename, it will be used as the new name of the copied file
@@ -50,8 +51,6 @@ import send2trash
 # Modifying files
 import os
 import sys
-# CURRENT TARGET OS PATH
-# D:\Movies\'FolderName'
 
 
 def initAscii():
@@ -80,14 +79,14 @@ def printCommands():
     cd     -> Change file directories
     adde   -> Add files to Stage by extention
     add    -> Add files to Stage by char string
-    rsf    -> Renames a single files in PATH
+    rsf    -> Renames a single files in Folder
     rf     -> Renames all files in Stage
     rm     -> Removes a file from Stage by string (Case Sensitive)
     rme    -> Removes all files from Stage by file extension.
     stage  -> List of modifiable items
     del    -> Delete items in Stage
     setx   -> Set File Extension to use for session
-    clear  -> Clears array containing modifiable items
+    clear  -> Clears Stage
     help   -> List commands
     use    -> Best practice on using the program
     exit   -> Close Program
@@ -99,24 +98,26 @@ def howToUse():
     print("""
     HOW TO USE EZNAMER")
     ########################################################")
-    NAVIGATION:
-    -> Use commands 'ls' to list all directories at your current
-         location. 'lst' will list all directories and sub-directories
-         from your current PATH.
-    -> Changing directories can be done by using 'cd' followed by the
-         desired PATH. I.e. 'cd D:\Movies\Folder'
+    -> PROGRAM NAVIGATION: <-
+    Use commands 'ls' to list all files in your current folder.
+    Changing to a specific folder or directory can be done by using
+    the 'cd' command followed by the desired folder PATH.
+    I.e. 'cd D:\Folder\FolderInsideAFolder'
+    Changing directories can be done by using 'cd' followed by the
+       desired PATH. I.e. 'cd D:\Movies\Folder'
     \n
-    WHAT IS YOUR STAGE:
-    -> Stage is where all the files that will be modified are stored.
-         You can add items by using commands 'add' or 'adde'
-         and remove by 'rm' or 'rme' or 'clear'.
+    -> WHAT IS YOUR STAGE: <-
+    The Stage is a list containing all the files that will be modified
+    are stored. To add items to the Stage users can use the command 'add'
+    or 'adde'. 'add' will add all files in the current working directory
+    that cointain a user given substring while 'adde' will add by user given
+    file extension.
     \n
-    TIPS:
-    ########################################################
-    MODIFYING SAME FILE TYPES IN SESSION
-    -> Use 'setx' to set file extention for session.
-         Will save you from having to manually
-         set it each time you modify a file.
+    -> TIPS: <-
+    If you plan on modifying batches of the same file types in a session, 
+    set the defualt file extension to use by using the 'setx' command.
+    This will save you from having to manually set it each time you modify 
+    a batch of files.
     \n
     """)
 
