@@ -1,8 +1,6 @@
 # Eznamer
-Copyright 2019 Russell Wong, All Rights Reserved
-Unauthorized copying of this file, via any medium is strictly prohibited
+Copyright 2019 Russell Wong, All Rights Reserved. Unauthorized copying of this file, via any medium is strictly prohibited.
 Written By: RUSSELL WONG
-Written In: Python 3.7
 
 ## What is Eznamer? 
 Eznamer is a simple and intuitive mass file renaming program. Program navigation is similar to that of a unix terminal where users can navigate folders via commands such as 'ls' and 'cd'. 
