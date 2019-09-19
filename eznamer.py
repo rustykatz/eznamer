@@ -205,8 +205,7 @@ def renameSingleFile(mod, newName, ext):
     print("\n")
 
 
-def renameFiles(mod, newNames, ext):
-    idx = 1
+def renameFiles(mod, newNames, ext, idx):
     total = 0
     for files in os.listdir():
         if(files in mod):
@@ -282,23 +281,25 @@ def clearModList(arr):
     print("\n")
     return arr
 
-    # lst   + \t\t\t\t + -> Lists all branch directories from current folder
-    # ls    + \t\t\t\t + -> Lists files in current folder
-    # cd    + \t\t\t\t + -> Change file directories
-    # adde  + \t\t\t\t + -> Add files to Stage by extention
-    # add   + \t\t\t\t + -> Add files to Stage by char string
-    # rsf   + \t\t\t\t + -> Renames a single files in PATH
-    # rf    + \t\t\t\t + -> Renames all files in Stage
-    # rm    + \t\t\t\t + -> Removes a file from Stage by string (Case Sensitive)
-    # rme   + \t\t\t\t + -> Removes all files from Stage by file extension.
-    # stage + \t\t\t\t + -> List of modifiable items
-    # del   + \t\t\t\t + -> List of modifiable items
-    # setx  + \t\t\t\t + -> Set File Extension to use for session
-    # clear + \t\t\t\t + -> Clears array containing modifiable items
-    # help  + \t\t\t\t + -> List commands
-    # use   + \t\t\t\t + -> Best practice on using the program
-    # exit  + \t\t\t\t + -> Close Program
-
+    """
+    LIST OF COMMANDS 
+    lst    -> Lists all branch directories from current folder
+    ls     -> Lists files in current folder
+    cd     -> Change file directories
+    adde   -> Add files to Stage by extention
+    add    -> Add files to Stage by char string
+    rsf    -> Renames a single files in PATH
+    rf     -> Renames all files in Stage
+    rm     -> Removes a file from Stage by string (Case Sensitive)
+    rme    -> Removes all files from Stage by file extension.
+    stage  -> List of modifiable items
+    del    -> List of modifiable items
+    setx   -> Set File Extension to use for session
+    clear  -> Clears array containing modifiable items
+    help   -> List commands
+    use    -> Best practice on using the program
+    exit   -> Close Program
+    """
 
 def main():
     initAscii()
@@ -394,15 +395,28 @@ def main():
         elif(ucmd[0] == "rf"):
             # CASE: 1 input
             if(len(ucmd) == 1):
+                # Session file extension set
                 if(sesext == ""):
                     ext = (input("File Extension: ")).strip()
+                    # Add missing . in front of file extension
                     if(ext[0] != '.'):
                         ext = '.' + ext
+
                     newName = (input("New File Names: ")).strip()
-                    renameFiles(mod, newName, ext)
+                    startIndex = (input("Starting Index: ")).strip()
+                    # Default start index 
+                    if startIndex == "":
+                        startIndex = 1
+                    renameFiles(mod, newName, ext, startIndex)
+
+                # No session file extension set
                 else:
                     newName = (input("New File Names: ")).strip()
-                    renameFiles(mod, newName, sesext)
+                    startIndex = (input("Starting Index: ")).strip()
+                    # Default start index 
+                    if startIndex == "":
+                        startIndex = 1
+                    renameFiles(mod, newName, sesext, startIndex)
 
             # CASE: 2 inputs
             else:
@@ -415,9 +429,9 @@ def main():
                     # CASE: missing '.' for extension
                     if(ext[0] != '.'):
                         ext = '.' + ext
-                    renameFiles(mod, newName, ext)
+                    renameFiles(mod, newName, ext, 1)
                 else:
-                    renameFiles(mod, newName, sesext)
+                    renameFiles(mod, newName, sesext, 1)
 
             # Clear mod list before returning
             mod = clearModList(mod)
@@ -480,7 +494,7 @@ def main():
             sys.exit(0)
 
         else:
-            print("Please input a valid command")
+            print("Please input a valid command! ")
 
-
-main()
+if __name__ == "__main__":
+    main()
