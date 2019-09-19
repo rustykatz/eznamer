@@ -1,12 +1,19 @@
 # Eznamer
 Copyright 2019 Russell Wong, All Rights Reserved. Unauthorized copying of this file, via any medium is strictly prohibited.
-Written By: RUSSELL WONG
 
 ## What is Eznamer? 
 Eznamer is a simple and intuitive mass file renaming program. Program navigation is similar to that of a unix terminal where users can navigate folders via commands such as 'ls' and 'cd'. 
 
-## How to Use?
+## Quick Start
 Using this application is as simple as downloading the script and running it locally from your terminal. Please make sure to install the necessary dependencies before running the script which can be found below. 
+
+1) Navigate to the folder directory of choice using 'cd' command
+2) Use 'ls' command to view all the files in the folder 
+3) Add the files you wish to modify using 'add' 
+4) The selected files are added to the Stage. You can view these files by using 'stage'
+5) Use 'rf' to rename files to whatever you like
+6) All done! 
+
 ### Program Navigation:
 Use commands 'ls' to list all files in your current folder. Changing to a specific folder or directory can be done by using the 'cd' command followed by the desired folder PATH. I.e. 'cd D:\Folder\FolderInsideAFolder'
 
