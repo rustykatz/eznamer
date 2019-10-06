@@ -220,7 +220,7 @@ def renameFiles(mod, newNames, ext, idx):
                 total += 1
             except:
                 print("ERROR: File name at destination already exists.")
-    print("%s/%s Files have been successfully renamed." % (idx-1, total))
+    print("%s/%s Files have been successfully renamed." % (str(idx-1), total))
     print("\n")
 
 
@@ -405,18 +405,18 @@ def main():
                     newName = (input("New File Names: ")).strip()
                     startIndex = (input("Starting Index: ")).strip()
                     # Default start index 
-                    if startIndex == "":
-                        startIndex = 1
-                    renameFiles(mod, newName, ext, startIndex)
+                    if str(startIndex) == "":
+                        startIndex = '1'
+                    renameFiles(mod, newName, ext, int(startIndex))
 
                 # No session file extension set
                 else:
                     newName = (input("New File Names: ")).strip()
                     startIndex = (input("Starting Index: ")).strip()
                     # Default start index 
-                    if startIndex == "":
-                        startIndex = 1
-                    renameFiles(mod, newName, sesext, startIndex)
+                    if str(startIndex) == "":
+                        startIndex = '1'
+                    renameFiles(mod, newName, sesext, int(startIndex))
 
             # CASE: 2 inputs
             else:
