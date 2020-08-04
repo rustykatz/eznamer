@@ -17,6 +17,8 @@ To use Ez-Namer, download the script and run it locally from your terminal. Make
 7) When you are ready, click "Re-Name Selected Files" 
 8) All done! 
 
+![Image of App](https://github.com/rustykatz/eznamer/blob/master/Resources/App_V2_0.PNG)
+
 ## New Features - V.2.0
 1) GUI built using PyQT
 2) Dark Mode
