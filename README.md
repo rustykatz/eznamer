@@ -17,10 +17,18 @@ To use Ez-Namer, download the script and run it locally from your terminal. Make
 7) When you are ready, click "Re-Name Selected Files" 
 8) All done! 
 
+## New Features - V.2.0
+1) GUI built using PyQT
+2) Dark Mode
+
+## In Progress
+1) Ergonomic App layout
+2) Keyboard shortcuts
+
 ## DARK MODE: 
 Dark theme used is from BreezeStyleSheets which is a fork of QDarkStyleSheet.
 
-# LEGACY - Ez-Namer
+# LEGACY - Ez-Namer (Command line version)
 The legacy version of Ez-Namer currently offers more tools but is restricted to the command line, as it does not have a UI. 
 Program navigation is similar to that of a unix terminal where users can navigate folders via commands such as 'ls' and 'cd'. 
 
