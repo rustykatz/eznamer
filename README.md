@@ -1,5 +1,5 @@
 # Ez-Namer
-Copyright 2020 Russell Wong, All Rights Reserved. Unauthorized copying of this file, via any medium is strictly prohibited.
+Written by: Russell Wong. 
 
 ## What is Ez-Namer? 
 Ez-Namer is a user friendly bulk file renaming program developed for the purpose of renaming terrabytes of photos and videos easily. 
