@@ -5,6 +5,7 @@
 # Written In: Python 3.7
 
 
+
 # ~~~~~ What is Eznamer? ~~~~~
 # Eznamer is a simple and intuitive bulk file renaming program. 
 # This program was built to help rename, and organize terrabytes of photos and videos. 
@@ -26,7 +27,6 @@ IN PROGRESS:
 - File Deletion
 '''
 
-
 # ~~~~~ This is just so I remember what the library functions do ~~~~~
 # shutil.copy(source, destination)
 # -> copy file at the path source to dest, both are strings.
@@ -43,8 +43,15 @@ IN PROGRESS:
 # shutil.rmtree(path) -> will delete folder and all files inside
 # -> ** Dangerous** as it's ir-reversible
 
+# SEND2TRASH MODULE COMMANDS:
+# send2trash.send2trash('filename')
+# Sends files to Recycling Bin
+# Prevent any unwanted changes by having a prompt window.
+# But im too lazy to add the prompt window lmao
 
 # py -m pip install [Package Name]
+# UI REBUILD COMMAND
+# pyuic5 -o gui_list.py gui_list.ui
 
 import os
 import sys
@@ -53,6 +60,8 @@ from PyQt5.QtWidgets import QFileDialog, QListWidget
 from PyQt5.QtCore import QFile, QTextStream
 from gui_list import Ui_MainWindow
 import breeze_resources
+import send2trash
+import shutil
 
 # CONSTANTS
 home = os.getenv("HOME")
@@ -75,6 +84,9 @@ class MyMainWindow(QtWidgets.QMainWindow):
         self.ui.btn_files_select_all.clicked.connect(self.clicked_btn_files_select_all)
         self.ui.btn_files_deselect.clicked.connect(self.clicked_btn_files_deselect)
         self.ui.btn_files_refresh.clicked.connect(self.clicked_btn_files_refresh)
+        self.ui.btn_files_move.clicked.connect(self.clicked_btn_files_move)
+        self.ui.btn_files_delete.clicked.connect(self.clicked_btn_files_delete)
+        # self.ui.btn_files_delete_undo.clicked.connect(self.clicked_btn_files_undo)
 
         # Defaults 
         self.ui.line_index.setText(DEFAULT_INDEX)
@@ -109,7 +121,7 @@ class MyMainWindow(QtWidgets.QMainWindow):
             # print(self.ui.listWidget.item(i))    
 
     '''
-    SECTION 2: LIST OF FILES IN STAGE
+    SECTION 2: Files
     '''
     # This renames all files in stage 
     def clicked_btn_files_apply(self):
@@ -153,6 +165,52 @@ class MyMainWindow(QtWidgets.QMainWindow):
 
     def clicked_btn_files_refresh(self):
         self.clicked_btn_dir_apply()
+
+    def clicked_btn_files_move(self):
+        currDir = os.getcwd()
+        print(f'Current Directory: {currDir}')
+
+        targetDir = QFileDialog.getExistingDirectory(self, "Open a folder", home, QFileDialog.ShowDirsOnly)
+        print(f'Target Directory: {targetDir}')
+
+        substr = self.ui.line_filter.text()
+        res = selectBySubStr([], substr)
+        stage = []
+
+        for i in range(self.ui.listWidget.count()):
+            # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
+            if self.ui.listWidget.item(i).checkState() == 2:
+                # stage.append(str(self.ui.listWidget.item(i).text()))
+                stage.append(res[i])
+
+        print(f"Moving Files from {currDir} to {targetDir} ...")
+        for files in stage:
+            itemLoc = currDir + '\\' + files
+            try:
+                # print(f"Item Location: {itemLoc}")
+                # print(f"Moving Item to {targetDir}")
+                shutil.move(itemLoc, targetDir)
+            except:
+                print(f"ERROR: Moving {files} to {targetDir}. Name already exists at destination.")
+
+
+    def clicked_btn_files_delete(self):
+        substr = self.ui.line_filter.text()
+        res = selectBySubStr([], substr)
+        stage = []
+
+        for i in range(self.ui.listWidget.count()):
+            # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
+            if self.ui.listWidget.item(i).checkState() == 2:
+                # stage.append(str(self.ui.listWidget.item(i).text()))
+                stage.append(res[i])
+
+        print("Moving Files to Recycling Bin...")
+        deleteFiles(stage)
+
+    # Undo most recent deleted set of files 
+    def clicked_btn_files_undo(self):
+        pass
 
 
     '''
@@ -219,7 +277,18 @@ def renameSingleFile(stage, newNames, ext):
     print("\n")
 
 
-
+def deleteFiles(stage):
+    num = 0
+    print("Preparing recylcing bin...")
+    for files in stage:
+        try:
+            print("Deleting '%s' from stage... " % (files))
+            send2trash.send2trash(files)
+            num += 1
+        except:
+            print("ERROR: Can't delete files")
+    print("%s Files successfully deleted." % (num))
+    print("\n")
 
 
 
