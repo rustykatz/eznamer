@@ -96,7 +96,11 @@ class MyMainWindow(QtWidgets.QMainWindow):
     SECTION 1: DIRECTORY 
     '''
     def clicked_btn_dir_change(self):
-        os.chdir(DEFAULT_DIRECTORY)
+        # Try to get default dir opened
+        try:
+            os.chdir(DEFAULT_DIRECTORY)
+        except:
+            os.getcwd()
         directory = QFileDialog.getExistingDirectory(self, "Open a folder", home, QFileDialog.ShowDirsOnly)
         self.ui.line_directory.setText(directory)
         # Auto refresh list
