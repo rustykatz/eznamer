@@ -14,4 +14,4 @@ setup(  name = "EZNamerProgram",
         version = "3.0",
         description = "Bulk file renaming made easy",
         options = {"build_exe": build_exe_options},
-        executables = [Executable("eznamer.py", base=base, icon="Icon256x256.ico")])
+        executables = [Executable("app/eznamer.py", base=base, icon="Icon256x256.ico")])

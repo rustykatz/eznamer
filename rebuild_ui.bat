@@ -1,8 +1,8 @@
 @echo off
 REM Converts a .ui file to a .py file using pyuic5
 
-SET UI_FILE=gui_list.ui
-SET PY_FILE=gui_list.py
+SET UI_FILE=app\gui_list.ui
+SET PY_FILE=app\gui_list.py
 
 echo Converting %UI_FILE% to %PY_FILE%...
 pyuic5 -o %PY_FILE% %UI_FILE%

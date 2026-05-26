@@ -9,7 +9,7 @@ of photos and videos. It provides a PyQt GUI for filtering files, selecting a
 rename batch, applying a naming pattern, and optionally keeping a mirror folder
 in sync.
 
-![Image of App](https://github.com/rustykatz/eznamer/blob/master/Resources/App_V2_0.PNG)
+![Image of App](resources/v3_screenshot.jpg)
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ Install the dependencies, then run the main app:
 
 ```powershell
 python -m pip install -r requirements.txt
-python eznamer.py
+python app/eznamer.py
 ```
 
 Then:
@@ -56,12 +56,11 @@ Mirror mode lets you rename matching files in a second folder at the same time.
 
 | File | Purpose |
 | --- | --- |
-| `eznamer.py` | Current main GUI app. |
-| `eznamer2.py` | Transitional older copy. Safe to remove after tests and any references no longer depend on it. |
-| `eznamer_legacy.py` | Original command-line version. |
-| `gui_list.py` | Generated PyQt UI code. |
-| `gui_list.ui` | Qt Designer source file. |
-| `test_eznamer3.py` | Tests for the refactored helper behavior. |
+| `app/eznamer.py` | Current main GUI app. |
+| `app/eznamer_legacy.py` | Original command-line version. |
+| `app/gui_list.py` | Generated PyQt UI code. |
+| `app/gui_list.ui` | Qt Designer source file. |
+| `tests/test_eznamer.py` | Tests for the refactored helper behavior. |
 
 ## Dependencies
 
@@ -74,16 +73,30 @@ Ez-Namer requires Python 3 and the packages listed in `requirements.txt`:
 
 ## Development Notes
 
-If the UI is edited in Qt Designer, regenerate `gui_list.py` from `gui_list.ui`
-before testing the app.
+If the UI is edited in Qt Designer, regenerate `app/gui_list.py` from
+`app/gui_list.ui` before testing the app.
+
+Runtime dependencies are declared in `requirements.in` and locked in
+`requirements.txt`. After changing `requirements.in`, refresh the lock file
+with:
+
+```powershell
+pip-compile --output-file requirements.txt --upgrade requirements.in
+```
+
+If `pip-compile` is not on your PATH, use:
+
+```powershell
+python -m piptools compile --output-file requirements.txt --upgrade requirements.in
+```
 
 ## Legacy Command-Line Version
 
-The legacy version is available as `eznamer_legacy.py`. It uses terminal-style
+The legacy version is available as `app/eznamer_legacy.py`. It uses terminal-style
 commands such as `ls`, `cd`, `add`, `adde`, `stage`, `rf`, `del`, and `clear`.
 
 To run it:
 
 ```powershell
-python eznamer_legacy.py
+python app/eznamer_legacy.py
 ```

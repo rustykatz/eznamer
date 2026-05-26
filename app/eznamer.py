@@ -24,8 +24,8 @@ LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class Config:
     HOME = Path.home()
-    DEFAULT_DIRECTORY = Path(r"C:/Users/wongr/Desktop/test/test_nested")
-    DEFAULT_MIRROR_DIR = Path(r"C:/Users/wongr/Desktop/test mirrored/test_nested")
+    DEFAULT_DIRECTORY = HOME / "Desktop"
+    DEFAULT_MIRROR_DIR = HOME / "Desktop"
     DEFAULT_INDEX = 1
     DEFAULT_SEASON = 1
     DEFAULT_EXTENSION = ".mkv"
