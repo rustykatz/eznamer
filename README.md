@@ -63,7 +63,10 @@ Mirror mode lets you rename matching files in a second folder at the same time.
 | `app/eznamer_legacy.py` | Original command-line version. |
 | `app/gui_list.py` | Generated PyQt UI code. |
 | `app/gui_list.ui` | Qt Designer source file. |
+| `resources/` | Icons, screenshots, Qt styles, and resource sources. |
 | `tests/test_eznamer.py` | Tests for the refactored helper behavior. |
+| `setup.py` | cx_Freeze build configuration. |
+| `rebuild_ui.bat` | Regenerates `app/gui_list.py` from `app/gui_list.ui`. |
 
 ## Dependencies
 
@@ -80,6 +83,9 @@ For development and packaging tools, install `requirements.dev` instead:
 python -m pip install -r requirements.dev
 ```
 
+`requirements.dev` includes `pytest` for running the test suite and
+`pytest-cov` for coverage reports.
+
 The main runtime packages are:
 
 | Module | Purpose |
@@ -91,6 +97,27 @@ The main runtime packages are:
 
 If the UI is edited in Qt Designer, regenerate `app/gui_list.py` from
 `app/gui_list.ui` before testing the app.
+
+Run the test suite with:
+
+```powershell
+python -m pytest -q
+```
+
+Run tests with coverage with:
+
+```powershell
+python -m pytest --cov=app --cov-report=term-missing -q
+```
+
+Build the Windows executable with:
+
+```powershell
+python setup.py build
+```
+
+The build config copies `resources/` so runtime assets such as the app icon are
+available in the frozen app.
 
 Runtime dependencies are declared in `requirements.in` and locked in
 `requirements.txt`. After changing `requirements.in`, refresh the lock file

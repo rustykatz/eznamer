@@ -11,6 +11,7 @@ from typing import List, Tuple
 import send2trash
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
 import breeze_resources  # noqa: F401  # ensures :/dark.qss resource is available
@@ -24,8 +25,10 @@ LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class Config:
     HOME = Path.home()
-    DEFAULT_DIRECTORY = HOME / "Desktop"
-    DEFAULT_MIRROR_DIR = HOME / "Desktop"
+    RESOURCE_DIR = Path(__file__).resolve().parent.parent / "resources"
+    WINDOW_ICON = RESOURCE_DIR / "Icon32x32.png"
+    DEFAULT_DIRECTORY = HOME / "Videos"
+    DEFAULT_MIRROR_DIR = HOME / "Videos"
     DEFAULT_INDEX = 1
     DEFAULT_SEASON = 1
     DEFAULT_EXTENSION = ".mkv"
@@ -37,6 +40,7 @@ class MyMainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(str(Config.WINDOW_ICON)))
 
         self.cur_path: Path = Config.DEFAULT_DIRECTORY
         self.mirror_path: Path = Config.DEFAULT_MIRROR_DIR
@@ -152,12 +156,18 @@ class MyMainWindow(QtWidgets.QMainWindow):
             LOGGER.error("Name, extension, index, season, and pattern are required.")
             return
 
-        batch: List[Tuple[Path, Path]] = []
-        batch += self._rename_files(self.cur_path, stage, base, ext, idx, season, pattern)
-        if self.mirror_enabled:
-            batch += self._rename_files(self.mirror_path, stage, base, ext, idx, season, pattern)
-        if batch:
-            self._rename_history.append(batch)
+        self._apply_rename_batch(
+            rename_history=self._rename_history,
+            cur_path=self.cur_path,
+            mirror_path=self.mirror_path,
+            mirror_enabled=self.mirror_enabled,
+            stage=stage,
+            base=base,
+            ext=ext,
+            index=idx,
+            season=season,
+            pattern=pattern,
+        )
         self._refresh_file_list()
         self._refresh_mirror_status_if_checked()
 
@@ -224,6 +234,29 @@ class MyMainWindow(QtWidgets.QMainWindow):
                 send2trash.send2trash(str(p))
             except Exception as exc:
                 LOGGER.error("Delete error for %s: %s", p, exc)
+
+    @classmethod
+    def _apply_rename_batch(
+        cls,
+        *,
+        rename_history: List[List[Tuple[Path, Path]]],
+        cur_path: Path,
+        mirror_path: Path,
+        mirror_enabled: bool,
+        stage: List[str],
+        base: str,
+        ext: str,
+        index: str,
+        season: str,
+        pattern: str,
+    ) -> List[Tuple[Path, Path]]:
+        batch: List[Tuple[Path, Path]] = []
+        batch += cls._rename_files(cur_path, stage, base, ext, index, season, pattern)
+        if mirror_enabled:
+            batch += cls._rename_files(mirror_path, stage, base, ext, index, season, pattern)
+        if batch:
+            rename_history.append(batch)
+        return batch
 
     @staticmethod
     def _compare_directories(d1: Path, d2: Path) -> bool:

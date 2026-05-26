@@ -1,0 +1,9 @@
+[run]
+source = app
+omit =
+    app/breeze_resources.py
+    app/eznamer_legacy.py
+    app/gui_list.py
+
+[report]
+show_missing = True
