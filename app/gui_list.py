@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui_list.ui'
+# Form implementation generated from reading ui file 'app\gui_list.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -22,9 +22,6 @@ class Ui_MainWindow(object):
         font.setFamily("Open Sans")
         font.setPointSize(9)
         MainWindow.setFont(font)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Resources/Icon32x32.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")

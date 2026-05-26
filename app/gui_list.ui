@@ -34,10 +34,6 @@
   <property name="windowTitle">
    <string>Ez Namer</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>Resources/Icon32x32.png</normaloff>Resources/Icon32x32.png</iconset>
-  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
