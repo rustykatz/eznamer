@@ -1,85 +1,89 @@
 # Ez-Namer
-Written by: Russell Wong. 
 
-## What is Ez-Namer? 
-Ez-Namer is a user friendly bulk file renaming program developed for the purpose of renaming terrabytes of photos and videos easily. 
-It now features a modern GUI built using PyQt. 
+Written by Russell Wong.
 
-## Quick Start
-To use Ez-Namer, download the script and run it locally from your terminal. Make sure to install the necessary dependencies before running the script. The dependencies are outlined in the "Program Dependencies" section.
+## What is Ez-Namer?
 
-1) Run the python program "eznamer.py" from your terminal
-2) Click "Change" beside "Directory" to select a folder containing the files you wish to rename
-3) Optionally enter in a search filter and click "Apply" beside "Search Filter" 
-4) Select the files you wish to rename in the list window
-5) Set the a new file name, starting index, and file extension(".jpeg", ".png", ".mkv", etc.)
-6) The selected files are added to the Stage. You can view these files by using 'stage'
-7) When you are ready, click "Re-Name Selected Files" 
-8) All done! 
+Ez-Namer is a user-friendly bulk file renaming app for organizing large batches
+of photos and videos. It provides a PyQt GUI for filtering files, selecting a
+rename batch, applying a naming pattern, and optionally keeping a mirror folder
+in sync.
 
 ![Image of App](https://github.com/rustykatz/eznamer/blob/master/Resources/App_V2_0.PNG)
 
-## New Features - V.2.0
-1) GUI built using PyQT
-2) Dark Mode
+## Quick Start
 
-## In Progress
-1) Ergonomic App layout
-2) Keyboard shortcuts
+Install the dependencies, then run the main app:
 
-## DARK MODE: 
-Dark theme used is from BreezeStyleSheets which is a fork of QDarkStyleSheet.
+```powershell
+python -m pip install -r requirements.txt
+python eznamer.py
+```
 
-# LEGACY - Ez-Namer (Command line version)
-The legacy version of Ez-Namer currently offers more tools but is restricted to the command line, as it does not have a UI. 
-Program navigation is similar to that of a unix terminal where users can navigate folders via commands such as 'ls' and 'cd'. 
+Then:
 
-## LEGACY - Quick Start
-To use Ez-Namer Legacy, download the script and run it locally from your terminal. Make sure to install the necessary dependencies before running the script. The dependencies are outlined in the "Program Dependencies" section.
+1. Click **Change** beside **Directory** to select the folder containing files to rename.
+2. Optionally enter a search filter and click **Apply** beside **Search Filter**.
+3. Select the files to rename in the list.
+4. Enter the base name, season, starting episode index, file extension, and pattern.
+5. Click **Re-Name Selected Files**.
+6. Use **Undo** if you need to revert the most recent rename batch.
 
-1) Run the python program "eznamer_legacy.py" from your terminal
-2) Navigate to the folder directory of choice using 'cd' command
-3) Use the 'ls' command to view all the files in the folder 
-4) Add the files you wish to modify using 'add' 
-5) The selected files are added to the Stage. You can view these files by using 'stage'
-6) Use 'rf' to rename files to whatever you like
-7) All done! 
+The default rename pattern is:
 
-## TIPS:
-If you plan on modifying batches of the same file types in a session, set the defualt file extension to use by using the 'setx' command.
-This will save you from having to manually set it each time you modify a batch of files. 
+```text
+{name} - S{season:02}E{idx:02}{ext}
+```
 
+Example output:
 
-### The Stage:
-The Stage is a list containing all the files that will be modified or stored. To add items to the Stage, users can use the command 'add' or 'adde'. 'add' will add all files in the current working directory that cointain a user given substring while 'adde' will add by user given file extension. 
+```text
+Show Name - S01E01.mkv
+Show Name - S01E02.mkv
+```
 
-Removing files can be done by using the 'rm', 'rme', or 'clear' commands. 'rm' removes all files in Stage that contain a user given substring, 'rme' will remove by file extension, and 'clear' will remove all items in Stage.
+## Mirror Mode
 
-## LEGACY - Command List: 
+Mirror mode lets you rename matching files in a second folder at the same time.
 
-| COMMAND  | DESCRIPTION |
-| ------------- | ------------- |
-| lst  | Lists all branch directories from current folder |
-| ls  | Lists files in current folder |
-| cd  | Change file directories |
-| adde  | Add files to Stage by extention |
-| add  | Add files to Stage by char string |
-| rsf  | Renames a single files in folder  |
-| rf  | Renames all files in Stage  |
-| rm  | Removes a file from Stage by string (Case Sensitive)  |
-| rme  | Removes all files from Stage by file extension.  |
-| stage  | List of modifiable items |
-| del  | Delete items in Stage |
-| setx  | Set File Extension to use for session |
-| clear  | Clears Stage |
-| help  | List commands |
-| use  | Best practice on using the program |
-| exit  | Closes Program |
+1. Select the main directory.
+2. Select the mirror directory.
+3. Enable the mirror checkbox.
+4. Ez-Namer checks whether both folders contain the same file names.
+5. If the folders match, rename actions apply to both folders.
 
-## LEGACY - Program Dependencies 
-As this program is not currently packaged into a standalone application or executable file, it requires users to download the following PYTHON 3.7 libraries. 
+## Current Files
 
-| #  | MODULE |
-| ------------- | ------------- |
-| 1.  | send2trash |
+| File | Purpose |
+| --- | --- |
+| `eznamer.py` | Current main GUI app. |
+| `eznamer2.py` | Transitional older copy. Safe to remove after tests and any references no longer depend on it. |
+| `eznamer_legacy.py` | Original command-line version. |
+| `gui_list.py` | Generated PyQt UI code. |
+| `gui_list.ui` | Qt Designer source file. |
+| `test_eznamer3.py` | Tests for the refactored helper behavior. |
 
+## Dependencies
+
+Ez-Namer requires Python 3 and the packages listed in `requirements.txt`:
+
+| Module | Purpose |
+| --- | --- |
+| `PyQt5` | GUI framework. |
+| `send2trash` | Safely sends deleted files to the recycle bin. |
+
+## Development Notes
+
+If the UI is edited in Qt Designer, regenerate `gui_list.py` from `gui_list.ui`
+before testing the app.
+
+## Legacy Command-Line Version
+
+The legacy version is available as `eznamer_legacy.py`. It uses terminal-style
+commands such as `ls`, `cd`, `add`, `adde`, `stage`, `rf`, `del`, and `clear`.
+
+To run it:
+
+```powershell
+python eznamer_legacy.py
+```

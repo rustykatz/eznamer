@@ -1,316 +1,290 @@
-# ~~~~~ EZNAMER ~~~~~
-# Copyright 2020 Russell Wong, All Rights Reserved
-# Unauthorized copying of this file, via any medium is strictly prohibited
-# Written By: RUSSELL WONG
-# Written In: Python 3.7
+from __future__ import annotations
 
-
-
-# ~~~~~ What is Eznamer? ~~~~~
-# Eznamer is a simple and intuitive bulk file renaming program. 
-# This program was built to help rename, and organize terrabytes of photos and videos. 
-# It now features a modern GUI built using PyQt.
-
-'''
-UPDATE LOG: 
-- Integration of PYQT GUI for ease of use - DONE
-- Some cmd based commands are no longer necessary with gui, so will be removed - DONE
-- cmd functionality preserved in 'eznamer_legacy.py' - DONE
-- Swapping to OOP design - DONE
-- Core functions - DONE
-- Simple UI Test - DONE
-
-IN PROGRESS:
-- Ergonomic app layout
-- Package into executable
-- File Move after rename
-- File Deletion
-'''
-
-# ~~~~~ This is just so I remember what the library functions do ~~~~~
-# shutil.copy(source, destination)
-# -> copy file at the path source to dest, both are strings.
-# -> If dest is a filename, it will be used as the new name of the copied file
-# -> Returns a string of the path of the copied file
-
-# shutil.copytree(source, destination)
-# -> Copies entire folder and every sub folder/ file
-
-
-# Deleting Files and Folders:
-# os.unlink(path) -> Will delete file at path
-# os.rmdir(path) -> delete folder at path, ** MUST BE EMPTY **
-# shutil.rmtree(path) -> will delete folder and all files inside
-# -> ** Dangerous** as it's ir-reversible
-
-# SEND2TRASH MODULE COMMANDS:
-# send2trash.send2trash('filename')
-# Sends files to Recycling Bin
-# Prevent any unwanted changes by having a prompt window.
-# But im too lazy to add the prompt window lmao
-
-# py -m pip install [Package Name]
-# UI REBUILD COMMAND
-# pyuic5 -o gui_list.py gui_list.ui
-
-import os
-import sys
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFileDialog, QListWidget
-from PyQt5.QtCore import QFile, QTextStream
-from gui_list import Ui_MainWindow
-import breeze_resources
-import send2trash
+import logging
+import re
 import shutil
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Tuple
 
-# CONSTANTS
-home = os.getenv("HOME")
-DEFAULT_DIRECTORY = "D:\Movies"
-DEFAULT_INDEX = "1"
-DEFAULT_EXTENSION = ".mkv"
+import send2trash
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
+
+import breeze_resources  # noqa: F401  # ensures :/dark.qss resource is available
+from gui_list import Ui_MainWindow
+
+
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+LOGGER = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class Config:
+    HOME = Path.home()
+    DEFAULT_DIRECTORY = Path(r"C:/Users/wongr/Desktop/test/test_nested")
+    DEFAULT_MIRROR_DIR = Path(r"C:/Users/wongr/Desktop/test mirrored/test_nested")
+    DEFAULT_INDEX = 1
+    DEFAULT_SEASON = 1
+    DEFAULT_EXTENSION = ".mkv"
+    DEFAULT_PATTERN = "{name} - S{season:02}E{idx:02}{ext}"
+
 
 class MyMainWindow(QtWidgets.QMainWindow):
-    
-    def __init__(self):
-        super(MyMainWindow, self).__init__()
+    def __init__(self) -> None:
+        super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # Button Connect
-        self.ui.btn_dir_change.clicked.connect(self.clicked_btn_dir_change)
-        self.ui.btn_dir_apply.clicked.connect(self.clicked_btn_dir_apply)
-        self.ui.btn_filter_apply.clicked.connect(self.clicked_btn_filter_apply)
-        self.ui.btn_files_apply.clicked.connect(self.clicked_btn_files_apply)
-        self.ui.btn_files_select_all.clicked.connect(self.clicked_btn_files_select_all)
-        self.ui.btn_files_deselect.clicked.connect(self.clicked_btn_files_deselect)
-        self.ui.btn_files_refresh.clicked.connect(self.clicked_btn_files_refresh)
-        self.ui.btn_files_move.clicked.connect(self.clicked_btn_files_move)
-        self.ui.btn_files_delete.clicked.connect(self.clicked_btn_files_delete)
-        # self.ui.btn_files_delete_undo.clicked.connect(self.clicked_btn_files_undo)
+        self.cur_path: Path = Config.DEFAULT_DIRECTORY
+        self.mirror_path: Path = Config.DEFAULT_MIRROR_DIR
+        self.mirror_enabled: bool = False
+        self._rename_history: List[List[Tuple[Path, Path]]] = []
 
-        # Defaults 
-        self.ui.line_index.setText(DEFAULT_INDEX)
-        self.ui.line_extension.setText(DEFAULT_EXTENSION)
+        self._connect_signals()
+        self._populate_defaults()
+        self._refresh_file_list()
 
-    '''
-    SECTION 1: DIRECTORY 
-    '''
-    def clicked_btn_dir_change(self):
-        # Try to get default dir opened
-        try:
-            os.chdir(DEFAULT_DIRECTORY)
-        except:
-            os.getcwd()
-        directory = QFileDialog.getExistingDirectory(self, "Open a folder", home, QFileDialog.ShowDirsOnly)
-        self.ui.line_directory.setText(directory)
-        # Auto refresh list
-        self.clicked_btn_dir_apply()
-    
-    def clicked_btn_dir_apply(self):
-        # Clear list before selection
-        self.ui.listWidget.clear() 
+    def _connect_signals(self) -> None:
+        u = self.ui
+        u.btn_dir_change.clicked.connect(self._on_change_dir)
+        u.btn_dir_apply.clicked.connect(self._on_apply_dir)
+        u.btn_dir_use_dir_name.clicked.connect(self._on_use_dir_name)
+        u.btn_dir_change_mirror.clicked.connect(lambda: self._on_change_dir(mirror=True))
+        u.btn_dir_apply_mirror.clicked.connect(lambda: self._on_apply_dir(mirror=True))
+        u.btn_filter_apply.clicked.connect(self._refresh_file_list)
+        u.btn_files_select_all.clicked.connect(lambda: self._set_all_check_states(Qt.Checked))
+        u.btn_files_deselect.clicked.connect(lambda: self._set_all_check_states(Qt.Unchecked))
+        u.btn_files_refresh.clicked.connect(self._refresh_file_list)
+        u.btn_files_apply.clicked.connect(self._on_apply_files)
+        u.btn_files_delete.clicked.connect(self._on_delete_files)
+        u.btn_files_undo.clicked.connect(self._on_undo)
+        if hasattr(u, "btn_files_move"):
+            u.btn_files_move.clicked.connect(self._on_move_files)
+        u.checkbox_mirror.stateChanged.connect(self._on_toggle_mirror)
 
-        path = self.ui.line_directory.text()
-        if path == "": return None  
-        os.chdir(path)
-        # print(f'Changing to File Path: {path}')
-        substr = self.ui.line_filter.text()
-        res = selectBySubStr([], substr)
+    def _populate_defaults(self) -> None:
+        u = self.ui
+        u.line_directory.setText(str(Config.DEFAULT_DIRECTORY))
+        u.line_directory_mirror.setText(str(Config.DEFAULT_MIRROR_DIR))
+        u.line_index.setText(str(Config.DEFAULT_INDEX))
+        u.line_season.setText(str(Config.DEFAULT_SEASON))
+        u.line_extension.setText(Config.DEFAULT_EXTENSION)
+        u.line_pattern.setText(Config.DEFAULT_PATTERN)
 
-        # Note: Must add 1 to get proper label ->  1. Item ,2. Item
-        for i in range(len(res)):
-            self.ui.listWidget.addItem(str(i+1) +'. ' + str(res[i]))
-            self.ui.listWidget.setHidden(False)
-            self.ui.listWidget.item(i).setCheckState(False)  
-            # print(self.ui.listWidget.item(i))    
-
-    '''
-    SECTION 2: Files
-    '''
-    # This renames all files in stage 
-    def clicked_btn_files_apply(self):
-        substr = self.ui.line_filter.text()
-        res = selectBySubStr([], substr)
-        stage = []
-
-        for i in range(self.ui.listWidget.count()):
-            # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
-            if self.ui.listWidget.item(i).checkState() == 2:
-                # stage.append(str(self.ui.listWidget.item(i).text()))
-                stage.append(res[i])
-
-        print(stage)
-
-        # Rename all files in stage
-        print("Beginning file rename execution...")
-        newNames = self.ui.line_name.text()
-        fileExtn = self.ui.line_extension.text()
-        idx = self.ui.line_index.text()
-    
-        if newNames != "" and fileExtn != "": 
-            # Rename multiple 
-            if idx != "": 
-                renameFiles(stage, newNames, fileExtn, int(idx))
-            else:
-                # Rename Single
-                renameSingleFile(stage, newNames, fileExtn)
+    def _on_toggle_mirror(self, state: int) -> None:
+        if state == Qt.Checked:
+            self.mirror_enabled = self._compare_directories(self.cur_path, self.mirror_path)
+            self.ui.lbl_mirror_check.setText("Same files" if self.mirror_enabled else "Mismatch")
         else:
-            print("ERROR: Name, File extension and index cannot be blank.")
+            self.mirror_enabled = False
+            self.ui.lbl_mirror_check.clear()
 
- 
-    # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
-    def clicked_btn_files_select_all(self):
+    def _refresh_mirror_status_if_checked(self) -> None:
+        if self.ui.checkbox_mirror.isChecked():
+            self._on_toggle_mirror(Qt.Checked)
+
+    def _on_change_dir(self, *, mirror: bool = False) -> None:
+        title = "Select Mirror Folder" if mirror else "Select Folder"
+        start_dir = str(self.mirror_path if mirror else self.cur_path)
+        new_dir = QFileDialog.getExistingDirectory(self, title, start_dir, QFileDialog.ShowDirsOnly)
+        if not new_dir:
+            return
+        if mirror:
+            self.ui.line_directory_mirror.setText(new_dir)
+        else:
+            self.ui.line_directory.setText(new_dir)
+        self._on_apply_dir(mirror=mirror)
+
+    def _on_apply_dir(self, *, mirror: bool = False) -> None:
+        txt = self.ui.line_directory_mirror.text() if mirror else self.ui.line_directory.text()
+        path = Path(txt).expanduser()
+        if not path.is_dir():
+            LOGGER.error("Invalid directory: %s", path)
+            return
+        if mirror:
+            self.mirror_path = path
+            self._refresh_mirror_status_if_checked()
+        else:
+            self.cur_path = path
+            self._refresh_file_list()
+            self._refresh_mirror_status_if_checked()
+
+    def _on_use_dir_name(self) -> None:
+        self.ui.line_name.setText(self.cur_path.stem)
+
+    def _refresh_file_list(self) -> None:
+        files = self._select_by_substr(self.cur_path, self.ui.line_filter.text())
+        lw = self.ui.listWidget
+        lw.blockSignals(True)
+        lw.clear()
+        for i, fname in enumerate(files, 1):
+            item = QListWidgetItem(f"{i}. {fname}")
+            item.setCheckState(Qt.Unchecked)
+            lw.addItem(item)
+        lw.blockSignals(False)
+
+    def _set_all_check_states(self, state: Qt.CheckState) -> None:
         for i in range(self.ui.listWidget.count()):
-            self.ui.listWidget.item(i).setCheckState(2)
+            self.ui.listWidget.item(i).setCheckState(state)
 
-    def clicked_btn_files_deselect(self):
-         for i in range(self.ui.listWidget.count()):
-            self.ui.listWidget.item(i).setCheckState(0)
+    def _checked_files(self) -> List[str]:
+        full = self._select_by_substr(self.cur_path, self.ui.line_filter.text())
+        return [
+            full[i]
+            for i in range(self.ui.listWidget.count())
+            if self.ui.listWidget.item(i).checkState() == Qt.Checked
+        ]
 
-    def clicked_btn_files_refresh(self):
-        self.clicked_btn_dir_apply()
+    def _on_apply_files(self) -> None:
+        stage = self._checked_files()
+        if not stage:
+            return
 
-    def clicked_btn_files_move(self):
-        currDir = os.getcwd()
-        print(f'Current Directory: {currDir}')
+        base = self.ui.line_name.text().strip()
+        ext = self.ui.line_extension.text().strip()
+        idx = self.ui.line_index.text().strip()
+        season = self.ui.line_season.text().strip()
+        pattern = self.ui.line_pattern.text().strip()
+        if not (base and ext and idx and season and pattern):
+            LOGGER.error("Name, extension, index, season, and pattern are required.")
+            return
 
-        targetDir = QFileDialog.getExistingDirectory(self, "Open a folder", home, QFileDialog.ShowDirsOnly)
-        print(f'Target Directory: {targetDir}')
+        batch: List[Tuple[Path, Path]] = []
+        batch += self._rename_files(self.cur_path, stage, base, ext, idx, season, pattern)
+        if self.mirror_enabled:
+            batch += self._rename_files(self.mirror_path, stage, base, ext, idx, season, pattern)
+        if batch:
+            self._rename_history.append(batch)
+        self._refresh_file_list()
+        self._refresh_mirror_status_if_checked()
 
-        substr = self.ui.line_filter.text()
-        res = selectBySubStr([], substr)
-        stage = []
-
-        for i in range(self.ui.listWidget.count()):
-            # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
-            if self.ui.listWidget.item(i).checkState() == 2:
-                # stage.append(str(self.ui.listWidget.item(i).text()))
-                stage.append(res[i])
-
-        print(f"Moving Files from {currDir} to {targetDir} ...")
-        for files in stage:
-            itemLoc = currDir + '\\' + files
+    def _on_move_files(self) -> None:
+        dest_dir = QFileDialog.getExistingDirectory(self, "Move files to", str(Config.HOME), QFileDialog.ShowDirsOnly)
+        if not dest_dir:
+            return
+        dest = Path(dest_dir)
+        for fname in self._checked_files():
             try:
-                # print(f"Item Location: {itemLoc}")
-                # print(f"Moving Item to {targetDir}")
-                shutil.move(itemLoc, targetDir)
-            except:
-                print(f"ERROR: Moving {files} to {targetDir}. Name already exists at destination.")
+                shutil.move(str(self.cur_path / fname), str(dest / fname))
+            except Exception as exc:
+                LOGGER.error("Move failed for %s: %s", fname, exc)
+        self._refresh_file_list()
+        self._refresh_mirror_status_if_checked()
 
+    def _on_delete_files(self) -> None:
+        self._delete_files([self.cur_path / f for f in self._checked_files()])
+        self._refresh_file_list()
+        self._refresh_mirror_status_if_checked()
 
-    def clicked_btn_files_delete(self):
-        substr = self.ui.line_filter.text()
-        res = selectBySubStr([], substr)
-        stage = []
+    def _on_undo(self) -> None:
+        if not self._rename_history:
+            LOGGER.info("Nothing to undo.")
+            return
 
-        for i in range(self.ui.listWidget.count()):
-            # 0 = unchecked, 2 = checked, 1 = intermediate for trisStates 
-            if self.ui.listWidget.item(i).checkState() == 2:
-                # stage.append(str(self.ui.listWidget.item(i).text()))
-                stage.append(res[i])
-
-        print("Moving Files to Recycling Bin...")
-        deleteFiles(stage)
-
-    # Undo most recent deleted set of files 
-    def clicked_btn_files_undo(self):
-        pass
-
-
-    '''
-    SECTION 3: SEARCH FILTER
-    '''
-    def clicked_btn_filter_apply(self):
-        substr = self.ui.line_filter.text()
-        res = selectBySubStr([], substr)
-        # Refresh listwidget list 
-        self.ui.listWidget.clear()
-        # Note: Must add 1 to get proper label ->  1. Item ,2. Item
-        for i in range(len(res)):
-            self.ui.listWidget.addItem(str(i+1) +'. ' + str(res[i]))
-            self.ui.listWidget.setHidden(False)
-            self.ui.listWidget.item(i).setCheckState(False)
-
-
-''' 
-SECTION 4: Utility functions 
-'''
-# NOTE: substr is case sensitive
-def selectBySubStr(arr, substr):
-    num = 0
-    for file in os.listdir():
-        if (substr in file):
+        undone: List[str] = []
+        for newp, oldp in reversed(self._rename_history.pop()):
             try:
-                print("Adding file to stage: " + file)
-                arr.append(file)
-                num += 1
-            except:
-                print("ERROR: Can't add file to stage.")
-    print("%s Files have been added to stage." % (num))
-    print("\n")
-    return arr
+                if not newp.exists():
+                    LOGGER.warning("Undo skipped for %s: file no longer exists", newp)
+                    continue
+                if oldp.exists():
+                    LOGGER.error("Undo skipped for %s: %s already exists", newp, oldp)
+                    continue
+                newp.rename(oldp)
+                undone.append(f"{newp.name} -> {oldp.name}")
+            except Exception as exc:
+                LOGGER.error("Undo failed for %s: %s", newp, exc)
 
-def renameFiles(stage, newNames, ext, idx):
-    total = 0
-    for files in os.listdir():
-        if(files in stage):
+        if undone:
+            LOGGER.info("Undo completed:\n%s", "\n".join(undone))
+        self._refresh_file_list()
+        self._refresh_mirror_status_if_checked()
+
+    @staticmethod
+    def _natural_key(name: str) -> List[object]:
+        return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", name)]
+
+    @classmethod
+    def _select_by_substr(cls, path: Path, substr: str) -> List[str]:
+        if not path.is_dir():
+            LOGGER.error("Invalid directory: %s", path)
+            return []
+        return sorted(
+            (f.name for f in path.iterdir() if f.is_file() and substr in f.name),
+            key=cls._natural_key,
+        )
+
+    @staticmethod
+    def _delete_files(paths: List[Path]) -> None:
+        for p in paths:
             try:
-                if(idx <= 9):
-                    name = newNames + ' - 0' + str(idx) + ext
-                else:
-                    name = newNames + ' - ' + str(idx) + ext
-                print("Renaming '%s' to '%s'..." % (files, name))
-                os.rename(files, name)
+                send2trash.send2trash(str(p))
+            except Exception as exc:
+                LOGGER.error("Delete error for %s: %s", p, exc)
+
+    @staticmethod
+    def _compare_directories(d1: Path, d2: Path) -> bool:
+        try:
+            return {f.name for f in d1.iterdir() if f.is_file()} == {f.name for f in d2.iterdir() if f.is_file()}
+        except Exception as exc:
+            LOGGER.error("Directory comparison failed: %s", exc)
+            return False
+
+    @staticmethod
+    def _rename_files(
+        dir_path: Path,
+        stage: List[str],
+        base: str,
+        ext: str,
+        index: str,
+        season: str,
+        pattern: str,
+    ) -> List[Tuple[Path, Path]]:
+        try:
+            idx = int(index)
+            season_number = int(season)
+        except ValueError as exc:
+            LOGGER.error("Index and season must be numbers: %s", exc)
+            return []
+
+        if not dir_path.is_dir():
+            LOGGER.error("Invalid rename directory: %s", dir_path)
+            return []
+
+        renamed: List[Tuple[Path, Path]] = []
+        for original in stage:
+            src = dir_path / original
+            try:
+                dst = dir_path / pattern.format(name=base, ext=ext, idx=idx, season=season_number)
+                if not src.exists():
+                    LOGGER.warning("SKIPPED: %s does not exist", src.name)
+                    continue
+                if dst.exists():
+                    LOGGER.warning("SKIPPED: %s already exists", dst.name)
+                    continue
+                if src == dst:
+                    LOGGER.warning("SKIPPED: %s already has the target name", src.name)
+                    continue
+                src.rename(dst)
+                renamed.append((dst, src))
+                LOGGER.info("Renamed: %s -> %s", src.name, dst.name)
                 idx += 1
-                total += 1
-            except:
-                print("ERROR: File name at destination already exists.")
-    print("%s/%s Files have been successfully renamed." % (str(idx-1), total))
-    print("\n")
-
-def renameSingleFile(stage, newNames, ext):
-    if(len(stage) == 1):
-        try:
-            name = newNames + ext
-            print("Renaming '%s' to '%s'..." % (stage[0], name))
-            os.rename(stage[0], name)
-        except:
-            print("ERROR: renameSingleFile-> File name at destination already exists.")
-    else:
-        print("ERROR: Multiple Files. Please use 'rf' command.")
-    print("\n")
+            except Exception as exc:
+                LOGGER.error("Rename failed for %s: %s", original, exc)
+        return renamed
 
 
-def deleteFiles(stage):
-    num = 0
-    print("Preparing recylcing bin...")
-    for files in stage:
-        try:
-            print("Deleting '%s' from stage... " % (files))
-            send2trash.send2trash(files)
-            num += 1
-        except:
-            print("ERROR: Can't delete files")
-    print("%s Files successfully deleted." % (num))
-    print("\n")
-
-
-
-# Handles window switch
-class Controller():
-
-    def __init__(self):
-        pass
-
-    def show_main(self):
+class Controller:
+    def show_main(self) -> None:
         self.window_main = MyMainWindow()
-        #self.window_main.switch_window.connect(self.show_window1)
         self.window_main.show()
 
-def main():
-    app = QtWidgets.QApplication(sys.argv)
 
-    # set stylesheet
+def main() -> None:
+    app = QtWidgets.QApplication(sys.argv)
     file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
@@ -319,6 +293,7 @@ def main():
     controller = Controller()
     controller.show_main()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

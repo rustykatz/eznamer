@@ -10,19 +10,19 @@
     <x>0</x>
     <y>0</y>
     <width>520</width>
-    <height>600</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>520</width>
-    <height>600</height>
+    <height>750</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>520</width>
-    <height>600</height>
+    <height>750</height>
    </size>
   </property>
   <property name="font">
@@ -46,7 +46,7 @@
     <property name="geometry">
      <rect>
       <x>368</x>
-      <y>528</y>
+      <y>680</y>
       <width>129</width>
       <height>29</height>
      </rect>
@@ -65,7 +65,7 @@
     <property name="geometry">
      <rect>
       <x>16</x>
-      <y>484</y>
+      <y>540</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -83,8 +83,8 @@
    <widget class="QLabel" name="lbl_extension">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>484</y>
+      <x>272</x>
+      <y>540</y>
       <width>97</width>
       <height>31</height>
      </rect>
@@ -103,7 +103,7 @@
     <property name="geometry">
      <rect>
       <x>208</x>
-      <y>400</y>
+      <y>388</y>
       <width>81</width>
       <height>25</height>
      </rect>
@@ -122,7 +122,7 @@
     <property name="geometry">
      <rect>
       <x>112</x>
-      <y>400</y>
+      <y>388</y>
       <width>81</width>
       <height>25</height>
      </rect>
@@ -288,7 +288,7 @@
     <property name="geometry">
      <rect>
       <x>112</x>
-      <y>488</y>
+      <y>544</y>
       <width>65</width>
       <height>21</height>
      </rect>
@@ -300,8 +300,8 @@
    <widget class="QLineEdit" name="line_extension">
     <property name="geometry">
      <rect>
-      <x>304</x>
-      <y>488</y>
+      <x>384</x>
+      <y>544</y>
       <width>65</width>
       <height>21</height>
      </rect>
@@ -349,7 +349,7 @@
     <property name="geometry">
      <rect>
       <x>384</x>
-      <y>400</y>
+      <y>388</y>
       <width>81</width>
       <height>25</height>
      </rect>
@@ -368,7 +368,7 @@
     <property name="geometry">
      <rect>
       <x>16</x>
-      <y>528</y>
+      <y>680</y>
       <width>65</width>
       <height>29</height>
      </rect>
@@ -383,12 +383,12 @@
      <string>Delete</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_files_move">
+   <widget class="QPushButton" name="btn_files_undo">
     <property name="geometry">
      <rect>
-      <x>224</x>
-      <y>528</y>
-      <width>129</width>
+      <x>288</x>
+      <y>680</y>
+      <width>65</width>
       <height>29</height>
      </rect>
     </property>
@@ -399,7 +399,189 @@
      </font>
     </property>
     <property name="text">
-     <string>Move Selected Files</string>
+     <string>Undo</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_season">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>476</y>
+      <width>86</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Season:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="line_season">
+    <property name="geometry">
+     <rect>
+      <x>112</x>
+      <y>480</y>
+      <width>65</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_season_2">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>508</y>
+      <width>86</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Pattern:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="line_pattern">
+    <property name="geometry">
+     <rect>
+      <x>112</x>
+      <y>512</y>
+      <width>257</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_mirror">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>576</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Mirror</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="line_directory_mirror">
+    <property name="geometry">
+     <rect>
+      <x>112</x>
+      <y>608</y>
+      <width>193</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkbox_mirror">
+    <property name="geometry">
+     <rect>
+      <x>31</x>
+      <y>608</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enabled</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_dir_change_mirror">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>608</y>
+      <width>65</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Change</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_dir_apply_mirror">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>608</y>
+      <width>65</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Apply</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_dir_use_dir_name">
+    <property name="geometry">
+     <rect>
+      <x>384</x>
+      <y>448</y>
+      <width>81</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Use Dir Name</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_mirror_check">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>640</y>
+      <width>449</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
