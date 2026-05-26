@@ -20,8 +20,11 @@ main app:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python app/eznamer.py
+.\run.bat
 ```
+
+You can also launch the app directly with `python app/eznamer.py`. The
+`run.bat` helper prefers `.venv`, then `venv`, then the system `python`.
 
 Then:
 
@@ -66,6 +69,7 @@ Mirror mode lets you rename matching files in a second folder at the same time.
 | `resources/` | Icons, screenshots, Qt styles, and resource sources. |
 | `tests/test_eznamer.py` | Tests for the refactored helper behavior. |
 | `setup.py` | cx_Freeze build configuration. |
+| `run.bat` | Starts the GUI app from the project root. |
 | `rebuild_ui.bat` | Regenerates `app/gui_list.py` from `app/gui_list.ui`. |
 
 ## Dependencies
@@ -97,6 +101,10 @@ The main runtime packages are:
 
 If the UI is edited in Qt Designer, regenerate `app/gui_list.py` from
 `app/gui_list.ui` before testing the app.
+
+Keep runtime resource paths, such as the app icon, in `app/eznamer.py` rather
+than in `app/gui_list.ui`. The generated UI should stay free of machine-local
+absolute paths.
 
 Run the test suite with:
 
