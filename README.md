@@ -13,9 +13,12 @@ in sync.
 
 ## Quick Start
 
-Install the dependencies, then run the main app:
+Create a virtual environment, install the runtime dependencies, then run the
+main app:
 
 ```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python app/eznamer.py
 ```
@@ -64,7 +67,20 @@ Mirror mode lets you rename matching files in a second folder at the same time.
 
 ## Dependencies
 
-Ez-Namer requires Python 3 and the packages listed in `requirements.txt`:
+Ez-Namer requires Python 3. Runtime dependencies are installed from
+`requirements.txt`:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+For development and packaging tools, install `requirements.dev` instead:
+
+```powershell
+python -m pip install -r requirements.dev
+```
+
+The main runtime packages are:
 
 | Module | Purpose |
 | --- | --- |
