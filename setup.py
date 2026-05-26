@@ -11,7 +11,7 @@ if sys.platform == "win32":
     base = "Win32GUI"
 
 setup(  name = "EZNamerProgram",
-        version = "2.0",
+        version = "3.0",
         description = "Bulk file renaming made easy",
         options = {"build_exe": build_exe_options},
         executables = [Executable("eznamer.py", base=base, icon="Icon256x256.ico")])
