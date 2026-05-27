@@ -9,7 +9,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 build_exe_options = {
     "packages": ["os"],
     "excludes": ["tkinter"],
-    "include_files": [(str(PROJECT_ROOT / "resources"), "resources")],
+    "include_files": [
+        (str(PROJECT_ROOT / "app" / "breeze_resources.py"), "app/breeze_resources.py"),
+        (str(PROJECT_ROOT / "app" / "gui_list.py"), "app/gui_list.py"),
+        (str(PROJECT_ROOT / "resources"), "resources"),
+    ],
 }
 
 # GUI applications require a different base on Windows (the default is for a

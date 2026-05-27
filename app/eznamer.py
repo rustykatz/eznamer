@@ -14,6 +14,13 @@ from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QFileDialog, QListWidgetItem
 
+if getattr(sys, "frozen", False):
+    APP_DIR = Path(sys.executable).resolve().parent / "app"
+else:
+    APP_DIR = Path(__file__).resolve().parent
+if str(APP_DIR) not in sys.path:
+    sys.path.insert(0, str(APP_DIR))
+
 import breeze_resources  # noqa: F401  # ensures :/dark.qss resource is available
 from gui_list import Ui_MainWindow
 
@@ -25,7 +32,7 @@ LOGGER = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class Config:
     HOME = Path.home()
-    RESOURCE_DIR = Path(__file__).resolve().parent.parent / "resources"
+    RESOURCE_DIR = APP_DIR.parent / "resources"
     WINDOW_ICON = RESOURCE_DIR / "Icon32x32.png"
     DEFAULT_DIRECTORY = HOME / "Videos"
     DEFAULT_MIRROR_DIR = HOME / "Videos"
